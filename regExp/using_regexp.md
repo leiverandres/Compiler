@@ -32,4 +32,36 @@ r'[a-zA-z0-9\-_\.]+@[a-zA-Z]+\.[a-zA-Z]+'
 r'(0(1*0)*1)*'
 ```
 
-##
+## A RegExp to validate the java comments
+* _/\* comment \*/_
+* _//comment_
+* _/\***/_
+
+```python
+r'(//.*|/\*.*\*/|/\*\n?(\*.*\n?)*\*/)'
+```
+
+### Tested with
+
+* //This is a comment
+* /\*hola\*/
+* And:  
+```text
+  /*
+   *foo
+   *bar
+  */
+```
+## A RegExp to validate numbers with no leading zeros
+
+```python
+r'([1-9][0-9]*|0)'
+```
+
+
+## A RegExp to validate spanish words
+
+Proper Names has no '?'
+```python
+r'[A-ZÁÉÍÓÚ]?[a-záéíóúñ]*'
+```
