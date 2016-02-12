@@ -14,7 +14,7 @@ r'([1-9][0-9]*(ull|llu|uLL|LLu)?|0[0-7]*|0[xX][0-9a-fA-F]+|0[bB][01]+)'
 * hex 0X2A;
 * binary 0b101010;
 
-## A RegExp to check email addres
+## A RegExp to check email address
 
 ```python
 r'[a-zA-z0-9\-_\.]+@[a-zA-Z]+\.[a-zA-Z]+'
@@ -31,6 +31,36 @@ r'[a-zA-z0-9\-_\.]+@[a-zA-Z]+\.[a-zA-Z]+'
 ```python
 r'(0(1*0)*1)*'
 ```
+
+## A RegExp to validate a IPv4 address
+
+```python
+r'((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+```
+
+## A RegExp to validate Roman Numerals
+
+```python
+r'M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})'
+```
+
+## A RegExp to validate string like in C language
+
+```python
+r'\"(.|\\[a-zA-Z])*\"'
+```
+
+## A RegExp to validate numbers with miles point (e.g 123.101)
+
+```python
+r'[1-9][0-9]{0,2}\.[0-9]{3}'
+```
+
+### Tested with
+* 12.152
+* 1.000
+* 1423.545 (doesn't match)
+* 12.45 (doesn't match)
 
 ## A RegExp to validate the java comments
 * _/\* comment \*/_
@@ -52,6 +82,7 @@ r'(//.*|/\*.*\*/|/\*\n?(\*.*\n?)*\*/)'
    *bar
   */
 ```
+
 ## A RegExp to validate numbers with no leading zeros
 
 ```python
