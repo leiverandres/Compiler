@@ -1,4 +1,4 @@
-# Testin regular expression
+# Testing regular expression
 
 ## A RegExp to validate integer numbers in C (decimal, octal, hex, binary)
 
