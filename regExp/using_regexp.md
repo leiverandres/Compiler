@@ -29,7 +29,7 @@ r'[a-zA-z0-9\-_\.]+@[a-zA-Z]+\.[a-zA-Z]+'
 ## A RegExp to validate a multiple of 3 in binary
 
 ```python
-r'(0(1*0)*1)*'
+r'(01*0)*1)*'
 ```
 
 ## A RegExp to validate a IPv4 address
