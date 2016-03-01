@@ -113,11 +113,19 @@ def t_COMMENT(t):
   t.lexer.lineno += t.value.count('\n') # just take lines
   pass
 
+def find_colum(input, token):
+  last_cr = input.rfind('\n', 0, token.lexpos) # pos last \n before token we wante to find
+  if last_cr < 0:
+    last_ct = 0
+  column = (token.lexpos - last_cr) + 1
+  return column
+
 def t_error(t):
-  print("Illegal character %s line: %d" % (repr(t.value[0], t.lineno)))
+  print("Illegal character %s line: %d col: %d" % (repr(t.value[0]), t.lineno, find_colum(lexer.lexdata, t)))
   t.lexer.skip(1)
 
-lex.lex(debug=1)
+
+lexer = lex.lex(debug=0)
 
 if __name__ == '__main__':
   lex.runmain()
