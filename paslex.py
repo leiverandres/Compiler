@@ -28,9 +28,9 @@ reserved = {
 tokens = [
   'ID',
   'ASIGN',
-  'EQUALS',
+  'EQUAL',
   'INTEGER',
-  'FLOATVAR',
+  'FLOATNUM',
   'CONST',
   'MINUS',
   'PLUS',
@@ -52,15 +52,24 @@ tokens = [
   'COLM' # :
 ] + list(reserved.values())
 
-# literals = '+-*/,;:()[]'
+literals = '+-*/,;:()[]'
+'''
+  literals are useful to define simplier grammars like
+
+  expression : expression '+' term
+
+  instead
+
+  expression : expression PLUS term
+'''
 
 t_ASIGN = r':='
-t_EQUALS = r'=='
+t_EQUAL = r'=='
 t_MINUS = r'-'
 t_PLUS = r'\+'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
-t_STRING = r'\".*\"'
+t_STRING = r'\".*?\"'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LSQUARE = r'\['
@@ -79,7 +88,7 @@ def t_ID(t):
   t.type = reserved.get(t.value, 'ID')
   return t
 
-def t_FLOATVAR(t):
+def t_FLOATNUM(t):
   r'([1-9]\d*|0)(\.\d+(e[+-]?\d+)?|e[+-]?\d+)'
   try:
     t.value = float(t.value)
@@ -125,7 +134,7 @@ def t_error(t):
   t.lexer.skip(1)
 
 
-lexer = lex.lex(debug=0)
+lexer = lex.lex(debug=1)
 
 if __name__ == '__main__':
   lex.runmain()
