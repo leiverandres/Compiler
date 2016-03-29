@@ -31,25 +31,13 @@ tokens = [
   'EQUAL',
   'INTEGER',
   'FLOATNUM',
-  'CONST',
-  'MINUS',
-  'PLUS',
-  'TIMES',
-  'DIVIDE',
   'STRING',
   'NEWLINE',
-  'LPAREN', # '('
-  'RPAREN', # ')'
-  'LSQUARE', # left square bracket '['
-  'RSQUARE', # right square brecket ']'
   'LT', # less than
   'LE', # less and equal than
   'GT', # greater than
   'GE', # greater and equal than
   'NE', # not-equal
-  'COMMA', # ,
-  'SEMI', # ;
-  'COLM' # :
 ] + list(reserved.values())
 
 literals = '+-*/,;:()[]'
@@ -65,23 +53,12 @@ literals = '+-*/,;:()[]'
 
 t_ASIGN = r':='
 t_EQUAL = r'=='
-t_MINUS = r'-'
-t_PLUS = r'\+'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
 t_STRING = r'\".*?\"'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_LSQUARE = r'\['
-t_RSQUARE = r'\]'
 t_LT = r'<'
 t_LE = r'<='
 t_GT = r'>'
 t_GE = r'>='
 t_NE = r'!='
-t_COMMA = r','
-t_SEMI = r';'
-t_COLM = r':'
 
 def t_ID(t):
   r'[a-zA-Z_][\w]*'
@@ -134,7 +111,7 @@ def t_error(t):
   t.lexer.skip(1)
 
 
-lexer = lex.lex(debug=1)
+lexer = lex.lex(debug=0)
 
 if __name__ == '__main__':
   lex.runmain()

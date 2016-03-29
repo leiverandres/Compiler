@@ -1,0 +1,2903 @@
+Created by PLY version 3.8 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    NEWLINE
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> funlist
+Rule 2     funlist -> funlist function
+Rule 3     funlist -> function
+Rule 4     function -> FUN ID ( arglist ) localslist BEGIN statementBlock END
+Rule 5     arglist -> args
+Rule 6     arglist -> empty
+Rule 7     args -> args , var_decl
+Rule 8     args -> var_decl
+Rule 9     var_decl -> ID : type_specifier
+Rule 10    type_specifier -> type
+Rule 11    type_specifier -> FLOAT [ INTEGER ]
+Rule 12    type_specifier -> INT [ INTEGER ]
+Rule 13    type -> INT
+Rule 14    type -> FLOAT
+Rule 15    localslist -> locals
+Rule 16    localslist -> empty
+Rule 17    locals -> locals declaration_local ;
+Rule 18    locals -> declaration_local ;
+Rule 19    declaration_local -> var_decl
+Rule 20    declaration_local -> function
+Rule 21    statementBlock -> statementBlock ; statement
+Rule 22    statementBlock -> statement
+Rule 23    statement -> WHILE relationop DO statement
+Rule 24    statement -> ifthen
+Rule 25    statement -> ifthenelse
+Rule 26    statement -> location ASIGN expression
+Rule 27    statement -> inOutExpr
+Rule 28    statement -> RETURN expression
+Rule 29    statement -> functionCall
+Rule 30    statement -> SKIP
+Rule 31    statement -> BREAK
+Rule 32    statement -> BEGIN statementBlock END
+Rule 33    ifthen -> IF relationop THEN statement
+Rule 34    ifthenelse -> IF relationop THEN statement ELSE statement
+Rule 35    functionCall -> ID ( arglist )
+Rule 36    relationop -> relationop OR relationop
+Rule 37    relationop -> relationop AND relationop
+Rule 38    relationop -> NOT relationop
+Rule 39    relationop -> ( relationop )
+Rule 40    relationop -> relation
+Rule 41    relation -> expression LT expression
+Rule 42    relation -> expression LE expression
+Rule 43    relation -> expression GT expression
+Rule 44    relation -> expression GE expression
+Rule 45    relation -> expression NE expression
+Rule 46    relation -> expression EQUAL expression
+Rule 47    relation -> TRUE
+Rule 48    relation -> FALSE
+Rule 49    expression -> expression + expression
+Rule 50    expression -> expression - expression
+Rule 51    expression -> expression * expression
+Rule 52    expression -> expression / expression
+Rule 53    expression -> - expression
+Rule 54    expression -> + expression
+Rule 55    expression -> ( expression )
+Rule 56    expression -> number
+Rule 57    expression -> ID
+Rule 58    expression -> ID [ expression ]
+Rule 59    expression -> casting
+Rule 60    expression -> functionCall
+Rule 61    number -> INTEGER
+Rule 62    number -> FLOATNUM
+Rule 63    location -> ID
+Rule 64    location -> ID [ INTEGER ]
+Rule 65    casting -> INTEGER ( expression )
+Rule 66    casting -> FLOAT ( expression )
+Rule 67    inOutExpr -> PRINT ( STRING )
+Rule 68    inOutExpr -> WRITE ( expression )
+Rule 69    inOutExpr -> READ ( expression )
+Rule 70    empty -> <empty>
+
+Terminals, with rules where they appear
+
+(                    : 4 35 39 55 65 66 67 68 69
+)                    : 4 35 39 55 65 66 67 68 69
+*                    : 51
++                    : 49 54
+,                    : 7
+-                    : 50 53
+/                    : 52
+:                    : 9
+;                    : 17 18 21
+AND                  : 37
+ASIGN                : 26
+BEGIN                : 4 32
+BREAK                : 31
+DO                   : 23
+ELSE                 : 34
+END                  : 4 32
+EQUAL                : 46
+FALSE                : 48
+FLOAT                : 11 14 66
+FLOATNUM             : 62
+FUN                  : 4
+GE                   : 44
+GT                   : 43
+ID                   : 4 9 35 57 58 63 64
+IF                   : 33 34
+INT                  : 12 13
+INTEGER              : 11 12 61 64 65
+LE                   : 42
+LT                   : 41
+NE                   : 45
+NEWLINE              : 
+NOT                  : 38
+OR                   : 36
+PRINT                : 67
+READ                 : 69
+RETURN               : 28
+SKIP                 : 30
+STRING               : 67
+THEN                 : 33 34
+TRUE                 : 47
+WHILE                : 23
+WRITE                : 68
+[                    : 11 12 58 64
+]                    : 11 12 58 64
+error                : 
+
+Nonterminals, with rules where they appear
+
+arglist              : 4 35
+args                 : 5 7
+casting              : 59
+declaration_local    : 17 18
+empty                : 6 16
+expression           : 26 28 41 41 42 42 43 43 44 44 45 45 46 46 49 49 50 50 51 51 52 52 53 54 55 58 65 66 68 69
+function             : 2 3 20
+functionCall         : 29 60
+funlist              : 1 2
+ifthen               : 24
+ifthenelse           : 25
+inOutExpr            : 27
+locals               : 15 17
+localslist           : 4
+location             : 26
+number               : 56
+program              : 0
+relation             : 40
+relationop           : 23 33 34 36 36 37 37 38 39
+statement            : 21 22 23 33 34 34
+statementBlock       : 4 21 32
+type                 : 10
+type_specifier       : 9
+var_decl             : 7 8 19
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . funlist
+    (2) funlist -> . funlist function
+    (3) funlist -> . function
+    (4) function -> . FUN ID ( arglist ) localslist BEGIN statementBlock END
+
+    FUN             shift and go to state 4
+
+    function                       shift and go to state 1
+    funlist                        shift and go to state 2
+    program                        shift and go to state 3
+
+state 1
+
+    (3) funlist -> function .
+
+    FUN             reduce using rule 3 (funlist -> function .)
+    $end            reduce using rule 3 (funlist -> function .)
+
+
+state 2
+
+    (1) program -> funlist .
+    (2) funlist -> funlist . function
+    (4) function -> . FUN ID ( arglist ) localslist BEGIN statementBlock END
+
+    $end            reduce using rule 1 (program -> funlist .)
+    FUN             shift and go to state 4
+
+    function                       shift and go to state 5
+
+state 3
+
+    (0) S' -> program .
+
+
+
+state 4
+
+    (4) function -> FUN . ID ( arglist ) localslist BEGIN statementBlock END
+
+    ID              shift and go to state 6
+
+
+state 5
+
+    (2) funlist -> funlist function .
+
+    FUN             reduce using rule 2 (funlist -> funlist function .)
+    $end            reduce using rule 2 (funlist -> funlist function .)
+
+
+state 6
+
+    (4) function -> FUN ID . ( arglist ) localslist BEGIN statementBlock END
+
+    (               shift and go to state 7
+
+
+state 7
+
+    (4) function -> FUN ID ( . arglist ) localslist BEGIN statementBlock END
+    (5) arglist -> . args
+    (6) arglist -> . empty
+    (7) args -> . args , var_decl
+    (8) args -> . var_decl
+    (70) empty -> .
+    (9) var_decl -> . ID : type_specifier
+
+    )               reduce using rule 70 (empty -> .)
+    ID              shift and go to state 11
+
+    args                           shift and go to state 8
+    var_decl                       shift and go to state 9
+    arglist                        shift and go to state 10
+    empty                          shift and go to state 12
+
+state 8
+
+    (5) arglist -> args .
+    (7) args -> args . , var_decl
+
+    )               reduce using rule 5 (arglist -> args .)
+    ,               shift and go to state 13
+
+
+state 9
+
+    (8) args -> var_decl .
+
+    ,               reduce using rule 8 (args -> var_decl .)
+    )               reduce using rule 8 (args -> var_decl .)
+
+
+state 10
+
+    (4) function -> FUN ID ( arglist . ) localslist BEGIN statementBlock END
+
+    )               shift and go to state 14
+
+
+state 11
+
+    (9) var_decl -> ID . : type_specifier
+
+    :               shift and go to state 15
+
+
+state 12
+
+    (6) arglist -> empty .
+
+    )               reduce using rule 6 (arglist -> empty .)
+
+
+state 13
+
+    (7) args -> args , . var_decl
+    (9) var_decl -> . ID : type_specifier
+
+    ID              shift and go to state 11
+
+    var_decl                       shift and go to state 16
+
+state 14
+
+    (4) function -> FUN ID ( arglist ) . localslist BEGIN statementBlock END
+    (15) localslist -> . locals
+    (16) localslist -> . empty
+    (17) locals -> . locals declaration_local ;
+    (18) locals -> . declaration_local ;
+    (70) empty -> .
+    (19) declaration_local -> . var_decl
+    (20) declaration_local -> . function
+    (9) var_decl -> . ID : type_specifier
+    (4) function -> . FUN ID ( arglist ) localslist BEGIN statementBlock END
+
+    BEGIN           reduce using rule 70 (empty -> .)
+    ID              shift and go to state 11
+    FUN             shift and go to state 4
+
+    function                       shift and go to state 17
+    localslist                     shift and go to state 18
+    declaration_local              shift and go to state 19
+    var_decl                       shift and go to state 20
+    locals                         shift and go to state 22
+    empty                          shift and go to state 21
+
+state 15
+
+    (9) var_decl -> ID : . type_specifier
+    (10) type_specifier -> . type
+    (11) type_specifier -> . FLOAT [ INTEGER ]
+    (12) type_specifier -> . INT [ INTEGER ]
+    (13) type -> . INT
+    (14) type -> . FLOAT
+
+    FLOAT           shift and go to state 25
+    INT             shift and go to state 24
+
+    type_specifier                 shift and go to state 23
+    type                           shift and go to state 26
+
+state 16
+
+    (7) args -> args , var_decl .
+
+    ,               reduce using rule 7 (args -> args , var_decl .)
+    )               reduce using rule 7 (args -> args , var_decl .)
+
+
+state 17
+
+    (20) declaration_local -> function .
+
+    ;               reduce using rule 20 (declaration_local -> function .)
+
+
+state 18
+
+    (4) function -> FUN ID ( arglist ) localslist . BEGIN statementBlock END
+
+    BEGIN           shift and go to state 27
+
+
+state 19
+
+    (18) locals -> declaration_local . ;
+
+    ;               shift and go to state 28
+
+
+state 20
+
+    (19) declaration_local -> var_decl .
+
+    ;               reduce using rule 19 (declaration_local -> var_decl .)
+
+
+state 21
+
+    (16) localslist -> empty .
+
+    BEGIN           reduce using rule 16 (localslist -> empty .)
+
+
+state 22
+
+    (15) localslist -> locals .
+    (17) locals -> locals . declaration_local ;
+    (19) declaration_local -> . var_decl
+    (20) declaration_local -> . function
+    (9) var_decl -> . ID : type_specifier
+    (4) function -> . FUN ID ( arglist ) localslist BEGIN statementBlock END
+
+    BEGIN           reduce using rule 15 (localslist -> locals .)
+    ID              shift and go to state 11
+    FUN             shift and go to state 4
+
+    function                       shift and go to state 17
+    declaration_local              shift and go to state 29
+    var_decl                       shift and go to state 20
+
+state 23
+
+    (9) var_decl -> ID : type_specifier .
+
+    ,               reduce using rule 9 (var_decl -> ID : type_specifier .)
+    )               reduce using rule 9 (var_decl -> ID : type_specifier .)
+    ;               reduce using rule 9 (var_decl -> ID : type_specifier .)
+
+
+state 24
+
+    (12) type_specifier -> INT . [ INTEGER ]
+    (13) type -> INT .
+
+    [               shift and go to state 30
+    ,               reduce using rule 13 (type -> INT .)
+    )               reduce using rule 13 (type -> INT .)
+    ;               reduce using rule 13 (type -> INT .)
+
+
+state 25
+
+    (11) type_specifier -> FLOAT . [ INTEGER ]
+    (14) type -> FLOAT .
+
+    [               shift and go to state 31
+    ,               reduce using rule 14 (type -> FLOAT .)
+    )               reduce using rule 14 (type -> FLOAT .)
+    ;               reduce using rule 14 (type -> FLOAT .)
+
+
+state 26
+
+    (10) type_specifier -> type .
+
+    ,               reduce using rule 10 (type_specifier -> type .)
+    )               reduce using rule 10 (type_specifier -> type .)
+    ;               reduce using rule 10 (type_specifier -> type .)
+
+
+state 27
+
+    (4) function -> FUN ID ( arglist ) localslist BEGIN . statementBlock END
+    (21) statementBlock -> . statementBlock ; statement
+    (22) statementBlock -> . statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    statementBlock                 shift and go to state 32
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 41
+    ifthen                         shift and go to state 38
+
+state 28
+
+    (18) locals -> declaration_local ; .
+
+    ID              reduce using rule 18 (locals -> declaration_local ; .)
+    FUN             reduce using rule 18 (locals -> declaration_local ; .)
+    BEGIN           reduce using rule 18 (locals -> declaration_local ; .)
+
+
+state 29
+
+    (17) locals -> locals declaration_local . ;
+
+    ;               shift and go to state 49
+
+
+state 30
+
+    (12) type_specifier -> INT [ . INTEGER ]
+
+    INTEGER         shift and go to state 50
+
+
+state 31
+
+    (11) type_specifier -> FLOAT [ . INTEGER ]
+
+    INTEGER         shift and go to state 51
+
+
+state 32
+
+    (4) function -> FUN ID ( arglist ) localslist BEGIN statementBlock . END
+    (21) statementBlock -> statementBlock . ; statement
+
+    END             shift and go to state 52
+    ;               shift and go to state 53
+
+
+state 33
+
+    (28) statement -> RETURN . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 63
+    number                         shift and go to state 58
+
+state 34
+
+    (69) inOutExpr -> READ . ( expression )
+
+    (               shift and go to state 65
+
+
+state 35
+
+    (27) statement -> inOutExpr .
+
+    END             reduce using rule 27 (statement -> inOutExpr .)
+    ;               reduce using rule 27 (statement -> inOutExpr .)
+    ELSE            reduce using rule 27 (statement -> inOutExpr .)
+
+
+state 36
+
+    (67) inOutExpr -> PRINT . ( STRING )
+
+    (               shift and go to state 66
+
+
+state 37
+
+    (23) statement -> WHILE . relationop DO statement
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 67
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 73
+
+state 38
+
+    (24) statement -> ifthen .
+
+    END             reduce using rule 24 (statement -> ifthen .)
+    ;               reduce using rule 24 (statement -> ifthen .)
+    ELSE            reduce using rule 24 (statement -> ifthen .)
+
+
+state 39
+
+    (32) statement -> BEGIN . statementBlock END
+    (21) statementBlock -> . statementBlock ; statement
+    (22) statementBlock -> . statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    statementBlock                 shift and go to state 74
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 41
+    ifthen                         shift and go to state 38
+
+state 40
+
+    (26) statement -> location . ASIGN expression
+
+    ASIGN           shift and go to state 75
+
+
+state 41
+
+    (22) statementBlock -> statement .
+
+    END             reduce using rule 22 (statementBlock -> statement .)
+    ;               reduce using rule 22 (statementBlock -> statement .)
+
+
+state 42
+
+    (25) statement -> ifthenelse .
+
+    END             reduce using rule 25 (statement -> ifthenelse .)
+    ;               reduce using rule 25 (statement -> ifthenelse .)
+    ELSE            reduce using rule 25 (statement -> ifthenelse .)
+
+
+state 43
+
+    (30) statement -> SKIP .
+
+    END             reduce using rule 30 (statement -> SKIP .)
+    ;               reduce using rule 30 (statement -> SKIP .)
+    ELSE            reduce using rule 30 (statement -> SKIP .)
+
+
+state 44
+
+    (68) inOutExpr -> WRITE . ( expression )
+
+    (               shift and go to state 76
+
+
+state 45
+
+    (29) statement -> functionCall .
+
+    END             reduce using rule 29 (statement -> functionCall .)
+    ;               reduce using rule 29 (statement -> functionCall .)
+    ELSE            reduce using rule 29 (statement -> functionCall .)
+
+
+state 46
+
+    (63) location -> ID .
+    (64) location -> ID . [ INTEGER ]
+    (35) functionCall -> ID . ( arglist )
+
+    ASIGN           reduce using rule 63 (location -> ID .)
+    [               shift and go to state 78
+    (               shift and go to state 77
+
+
+state 47
+
+    (33) ifthen -> IF . relationop THEN statement
+    (34) ifthenelse -> IF . relationop THEN statement ELSE statement
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 79
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 73
+
+state 48
+
+    (31) statement -> BREAK .
+
+    END             reduce using rule 31 (statement -> BREAK .)
+    ;               reduce using rule 31 (statement -> BREAK .)
+    ELSE            reduce using rule 31 (statement -> BREAK .)
+
+
+state 49
+
+    (17) locals -> locals declaration_local ; .
+
+    ID              reduce using rule 17 (locals -> locals declaration_local ; .)
+    FUN             reduce using rule 17 (locals -> locals declaration_local ; .)
+    BEGIN           reduce using rule 17 (locals -> locals declaration_local ; .)
+
+
+state 50
+
+    (12) type_specifier -> INT [ INTEGER . ]
+
+    ]               shift and go to state 80
+
+
+state 51
+
+    (11) type_specifier -> FLOAT [ INTEGER . ]
+
+    ]               shift and go to state 81
+
+
+state 52
+
+    (4) function -> FUN ID ( arglist ) localslist BEGIN statementBlock END .
+
+    ;               reduce using rule 4 (function -> FUN ID ( arglist ) localslist BEGIN statementBlock END .)
+    FUN             reduce using rule 4 (function -> FUN ID ( arglist ) localslist BEGIN statementBlock END .)
+    $end            reduce using rule 4 (function -> FUN ID ( arglist ) localslist BEGIN statementBlock END .)
+
+
+state 53
+
+    (21) statementBlock -> statementBlock ; . statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 82
+    ifthen                         shift and go to state 38
+
+state 54
+
+    (66) casting -> FLOAT . ( expression )
+
+    (               shift and go to state 83
+
+
+state 55
+
+    (55) expression -> ( . expression )
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 84
+    number                         shift and go to state 58
+
+state 56
+
+    (54) expression -> + . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 85
+    number                         shift and go to state 58
+
+state 57
+
+    (53) expression -> - . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 86
+    number                         shift and go to state 58
+
+state 58
+
+    (56) expression -> number .
+
+    +               reduce using rule 56 (expression -> number .)
+    -               reduce using rule 56 (expression -> number .)
+    *               reduce using rule 56 (expression -> number .)
+    /               reduce using rule 56 (expression -> number .)
+    DO              reduce using rule 56 (expression -> number .)
+    OR              reduce using rule 56 (expression -> number .)
+    AND             reduce using rule 56 (expression -> number .)
+    THEN            reduce using rule 56 (expression -> number .)
+    )               reduce using rule 56 (expression -> number .)
+    END             reduce using rule 56 (expression -> number .)
+    ;               reduce using rule 56 (expression -> number .)
+    ELSE            reduce using rule 56 (expression -> number .)
+    LT              reduce using rule 56 (expression -> number .)
+    LE              reduce using rule 56 (expression -> number .)
+    GT              reduce using rule 56 (expression -> number .)
+    GE              reduce using rule 56 (expression -> number .)
+    NE              reduce using rule 56 (expression -> number .)
+    EQUAL           reduce using rule 56 (expression -> number .)
+    ]               reduce using rule 56 (expression -> number .)
+
+
+state 59
+
+    (60) expression -> functionCall .
+
+    +               reduce using rule 60 (expression -> functionCall .)
+    -               reduce using rule 60 (expression -> functionCall .)
+    *               reduce using rule 60 (expression -> functionCall .)
+    /               reduce using rule 60 (expression -> functionCall .)
+    DO              reduce using rule 60 (expression -> functionCall .)
+    OR              reduce using rule 60 (expression -> functionCall .)
+    AND             reduce using rule 60 (expression -> functionCall .)
+    THEN            reduce using rule 60 (expression -> functionCall .)
+    )               reduce using rule 60 (expression -> functionCall .)
+    END             reduce using rule 60 (expression -> functionCall .)
+    ;               reduce using rule 60 (expression -> functionCall .)
+    ELSE            reduce using rule 60 (expression -> functionCall .)
+    LT              reduce using rule 60 (expression -> functionCall .)
+    LE              reduce using rule 60 (expression -> functionCall .)
+    GT              reduce using rule 60 (expression -> functionCall .)
+    GE              reduce using rule 60 (expression -> functionCall .)
+    NE              reduce using rule 60 (expression -> functionCall .)
+    EQUAL           reduce using rule 60 (expression -> functionCall .)
+    ]               reduce using rule 60 (expression -> functionCall .)
+
+
+state 60
+
+    (62) number -> FLOATNUM .
+
+    )               reduce using rule 62 (number -> FLOATNUM .)
+    +               reduce using rule 62 (number -> FLOATNUM .)
+    -               reduce using rule 62 (number -> FLOATNUM .)
+    *               reduce using rule 62 (number -> FLOATNUM .)
+    /               reduce using rule 62 (number -> FLOATNUM .)
+    LT              reduce using rule 62 (number -> FLOATNUM .)
+    LE              reduce using rule 62 (number -> FLOATNUM .)
+    GT              reduce using rule 62 (number -> FLOATNUM .)
+    GE              reduce using rule 62 (number -> FLOATNUM .)
+    NE              reduce using rule 62 (number -> FLOATNUM .)
+    EQUAL           reduce using rule 62 (number -> FLOATNUM .)
+    DO              reduce using rule 62 (number -> FLOATNUM .)
+    OR              reduce using rule 62 (number -> FLOATNUM .)
+    AND             reduce using rule 62 (number -> FLOATNUM .)
+    THEN            reduce using rule 62 (number -> FLOATNUM .)
+    ]               reduce using rule 62 (number -> FLOATNUM .)
+    END             reduce using rule 62 (number -> FLOATNUM .)
+    ;               reduce using rule 62 (number -> FLOATNUM .)
+    ELSE            reduce using rule 62 (number -> FLOATNUM .)
+
+
+state 61
+
+    (61) number -> INTEGER .
+    (65) casting -> INTEGER . ( expression )
+
+    )               reduce using rule 61 (number -> INTEGER .)
+    +               reduce using rule 61 (number -> INTEGER .)
+    -               reduce using rule 61 (number -> INTEGER .)
+    *               reduce using rule 61 (number -> INTEGER .)
+    /               reduce using rule 61 (number -> INTEGER .)
+    LT              reduce using rule 61 (number -> INTEGER .)
+    LE              reduce using rule 61 (number -> INTEGER .)
+    GT              reduce using rule 61 (number -> INTEGER .)
+    GE              reduce using rule 61 (number -> INTEGER .)
+    NE              reduce using rule 61 (number -> INTEGER .)
+    EQUAL           reduce using rule 61 (number -> INTEGER .)
+    DO              reduce using rule 61 (number -> INTEGER .)
+    OR              reduce using rule 61 (number -> INTEGER .)
+    AND             reduce using rule 61 (number -> INTEGER .)
+    THEN            reduce using rule 61 (number -> INTEGER .)
+    ]               reduce using rule 61 (number -> INTEGER .)
+    END             reduce using rule 61 (number -> INTEGER .)
+    ;               reduce using rule 61 (number -> INTEGER .)
+    ELSE            reduce using rule 61 (number -> INTEGER .)
+    (               shift and go to state 87
+
+
+state 62
+
+    (59) expression -> casting .
+
+    +               reduce using rule 59 (expression -> casting .)
+    -               reduce using rule 59 (expression -> casting .)
+    *               reduce using rule 59 (expression -> casting .)
+    /               reduce using rule 59 (expression -> casting .)
+    DO              reduce using rule 59 (expression -> casting .)
+    OR              reduce using rule 59 (expression -> casting .)
+    AND             reduce using rule 59 (expression -> casting .)
+    THEN            reduce using rule 59 (expression -> casting .)
+    )               reduce using rule 59 (expression -> casting .)
+    END             reduce using rule 59 (expression -> casting .)
+    ;               reduce using rule 59 (expression -> casting .)
+    ELSE            reduce using rule 59 (expression -> casting .)
+    LT              reduce using rule 59 (expression -> casting .)
+    LE              reduce using rule 59 (expression -> casting .)
+    GT              reduce using rule 59 (expression -> casting .)
+    GE              reduce using rule 59 (expression -> casting .)
+    NE              reduce using rule 59 (expression -> casting .)
+    EQUAL           reduce using rule 59 (expression -> casting .)
+    ]               reduce using rule 59 (expression -> casting .)
+
+
+state 63
+
+    (28) statement -> RETURN expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    END             reduce using rule 28 (statement -> RETURN expression .)
+    ;               reduce using rule 28 (statement -> RETURN expression .)
+    ELSE            reduce using rule 28 (statement -> RETURN expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 64
+
+    (57) expression -> ID .
+    (58) expression -> ID . [ expression ]
+    (35) functionCall -> ID . ( arglist )
+
+    +               reduce using rule 57 (expression -> ID .)
+    -               reduce using rule 57 (expression -> ID .)
+    *               reduce using rule 57 (expression -> ID .)
+    /               reduce using rule 57 (expression -> ID .)
+    DO              reduce using rule 57 (expression -> ID .)
+    OR              reduce using rule 57 (expression -> ID .)
+    AND             reduce using rule 57 (expression -> ID .)
+    THEN            reduce using rule 57 (expression -> ID .)
+    )               reduce using rule 57 (expression -> ID .)
+    END             reduce using rule 57 (expression -> ID .)
+    ;               reduce using rule 57 (expression -> ID .)
+    ELSE            reduce using rule 57 (expression -> ID .)
+    LT              reduce using rule 57 (expression -> ID .)
+    LE              reduce using rule 57 (expression -> ID .)
+    GT              reduce using rule 57 (expression -> ID .)
+    GE              reduce using rule 57 (expression -> ID .)
+    NE              reduce using rule 57 (expression -> ID .)
+    EQUAL           reduce using rule 57 (expression -> ID .)
+    ]               reduce using rule 57 (expression -> ID .)
+    [               shift and go to state 92
+    (               shift and go to state 77
+
+
+state 65
+
+    (69) inOutExpr -> READ ( . expression )
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 93
+    number                         shift and go to state 58
+
+state 66
+
+    (67) inOutExpr -> PRINT ( . STRING )
+
+    STRING          shift and go to state 94
+
+
+state 67
+
+    (23) statement -> WHILE relationop . DO statement
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    DO              shift and go to state 96
+    OR              shift and go to state 97
+    AND             shift and go to state 95
+
+
+state 68
+
+    (40) relationop -> relation .
+
+    OR              reduce using rule 40 (relationop -> relation .)
+    AND             reduce using rule 40 (relationop -> relation .)
+    DO              reduce using rule 40 (relationop -> relation .)
+    THEN            reduce using rule 40 (relationop -> relation .)
+    )               reduce using rule 40 (relationop -> relation .)
+
+
+state 69
+
+    (47) relation -> TRUE .
+
+    DO              reduce using rule 47 (relation -> TRUE .)
+    OR              reduce using rule 47 (relation -> TRUE .)
+    AND             reduce using rule 47 (relation -> TRUE .)
+    THEN            reduce using rule 47 (relation -> TRUE .)
+    )               reduce using rule 47 (relation -> TRUE .)
+
+
+state 70
+
+    (39) relationop -> ( . relationop )
+    (55) expression -> ( . expression )
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 98
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 99
+
+state 71
+
+    (48) relation -> FALSE .
+
+    DO              reduce using rule 48 (relation -> FALSE .)
+    OR              reduce using rule 48 (relation -> FALSE .)
+    AND             reduce using rule 48 (relation -> FALSE .)
+    THEN            reduce using rule 48 (relation -> FALSE .)
+    )               reduce using rule 48 (relation -> FALSE .)
+
+
+state 72
+
+    (38) relationop -> NOT . relationop
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 100
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 73
+
+state 73
+
+    (41) relation -> expression . LT expression
+    (42) relation -> expression . LE expression
+    (43) relation -> expression . GT expression
+    (44) relation -> expression . GE expression
+    (45) relation -> expression . NE expression
+    (46) relation -> expression . EQUAL expression
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    LT              shift and go to state 105
+    LE              shift and go to state 101
+    GT              shift and go to state 106
+    GE              shift and go to state 103
+    NE              shift and go to state 104
+    EQUAL           shift and go to state 102
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 74
+
+    (32) statement -> BEGIN statementBlock . END
+    (21) statementBlock -> statementBlock . ; statement
+
+    END             shift and go to state 107
+    ;               shift and go to state 53
+
+
+state 75
+
+    (26) statement -> location ASIGN . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    number                         shift and go to state 58
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 108
+
+state 76
+
+    (68) inOutExpr -> WRITE ( . expression )
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 109
+    number                         shift and go to state 58
+
+state 77
+
+    (35) functionCall -> ID ( . arglist )
+    (5) arglist -> . args
+    (6) arglist -> . empty
+    (7) args -> . args , var_decl
+    (8) args -> . var_decl
+    (70) empty -> .
+    (9) var_decl -> . ID : type_specifier
+
+    )               reduce using rule 70 (empty -> .)
+    ID              shift and go to state 11
+
+    var_decl                       shift and go to state 9
+    arglist                        shift and go to state 110
+    empty                          shift and go to state 12
+    args                           shift and go to state 8
+
+state 78
+
+    (64) location -> ID [ . INTEGER ]
+
+    INTEGER         shift and go to state 111
+
+
+state 79
+
+    (33) ifthen -> IF relationop . THEN statement
+    (34) ifthenelse -> IF relationop . THEN statement ELSE statement
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    THEN            shift and go to state 112
+    OR              shift and go to state 97
+    AND             shift and go to state 95
+
+
+state 80
+
+    (12) type_specifier -> INT [ INTEGER ] .
+
+    ,               reduce using rule 12 (type_specifier -> INT [ INTEGER ] .)
+    )               reduce using rule 12 (type_specifier -> INT [ INTEGER ] .)
+    ;               reduce using rule 12 (type_specifier -> INT [ INTEGER ] .)
+
+
+state 81
+
+    (11) type_specifier -> FLOAT [ INTEGER ] .
+
+    ,               reduce using rule 11 (type_specifier -> FLOAT [ INTEGER ] .)
+    )               reduce using rule 11 (type_specifier -> FLOAT [ INTEGER ] .)
+    ;               reduce using rule 11 (type_specifier -> FLOAT [ INTEGER ] .)
+
+
+state 82
+
+    (21) statementBlock -> statementBlock ; statement .
+
+    END             reduce using rule 21 (statementBlock -> statementBlock ; statement .)
+    ;               reduce using rule 21 (statementBlock -> statementBlock ; statement .)
+
+
+state 83
+
+    (66) casting -> FLOAT ( . expression )
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 113
+    number                         shift and go to state 58
+
+state 84
+
+    (55) expression -> ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    )               shift and go to state 114
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 85
+
+    (54) expression -> + expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 54 (expression -> + expression .)
+    -               reduce using rule 54 (expression -> + expression .)
+    DO              reduce using rule 54 (expression -> + expression .)
+    OR              reduce using rule 54 (expression -> + expression .)
+    AND             reduce using rule 54 (expression -> + expression .)
+    THEN            reduce using rule 54 (expression -> + expression .)
+    )               reduce using rule 54 (expression -> + expression .)
+    END             reduce using rule 54 (expression -> + expression .)
+    ;               reduce using rule 54 (expression -> + expression .)
+    ELSE            reduce using rule 54 (expression -> + expression .)
+    LT              reduce using rule 54 (expression -> + expression .)
+    LE              reduce using rule 54 (expression -> + expression .)
+    GT              reduce using rule 54 (expression -> + expression .)
+    GE              reduce using rule 54 (expression -> + expression .)
+    NE              reduce using rule 54 (expression -> + expression .)
+    EQUAL           reduce using rule 54 (expression -> + expression .)
+    ]               reduce using rule 54 (expression -> + expression .)
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+  ! *               [ reduce using rule 54 (expression -> + expression .) ]
+  ! /               [ reduce using rule 54 (expression -> + expression .) ]
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+
+
+state 86
+
+    (53) expression -> - expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 53 (expression -> - expression .)
+    -               reduce using rule 53 (expression -> - expression .)
+    *               reduce using rule 53 (expression -> - expression .)
+    /               reduce using rule 53 (expression -> - expression .)
+    DO              reduce using rule 53 (expression -> - expression .)
+    OR              reduce using rule 53 (expression -> - expression .)
+    AND             reduce using rule 53 (expression -> - expression .)
+    THEN            reduce using rule 53 (expression -> - expression .)
+    )               reduce using rule 53 (expression -> - expression .)
+    END             reduce using rule 53 (expression -> - expression .)
+    ;               reduce using rule 53 (expression -> - expression .)
+    ELSE            reduce using rule 53 (expression -> - expression .)
+    LT              reduce using rule 53 (expression -> - expression .)
+    LE              reduce using rule 53 (expression -> - expression .)
+    GT              reduce using rule 53 (expression -> - expression .)
+    GE              reduce using rule 53 (expression -> - expression .)
+    NE              reduce using rule 53 (expression -> - expression .)
+    EQUAL           reduce using rule 53 (expression -> - expression .)
+    ]               reduce using rule 53 (expression -> - expression .)
+
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+  ! *               [ shift and go to state 89 ]
+  ! /               [ shift and go to state 91 ]
+
+
+state 87
+
+    (65) casting -> INTEGER ( . expression )
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 115
+    number                         shift and go to state 58
+
+state 88
+
+    (49) expression -> expression + . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 116
+    number                         shift and go to state 58
+
+state 89
+
+    (51) expression -> expression * . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 117
+    number                         shift and go to state 58
+
+state 90
+
+    (50) expression -> expression - . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 118
+    number                         shift and go to state 58
+
+state 91
+
+    (52) expression -> expression / . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 119
+    number                         shift and go to state 58
+
+state 92
+
+    (58) expression -> ID [ . expression ]
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 120
+    number                         shift and go to state 58
+
+state 93
+
+    (69) inOutExpr -> READ ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    )               shift and go to state 121
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 94
+
+    (67) inOutExpr -> PRINT ( STRING . )
+
+    )               shift and go to state 122
+
+
+state 95
+
+    (37) relationop -> relationop AND . relationop
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 123
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 73
+
+state 96
+
+    (23) statement -> WHILE relationop DO . statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 124
+    ifthen                         shift and go to state 38
+
+state 97
+
+    (36) relationop -> relationop OR . relationop
+    (36) relationop -> . relationop OR relationop
+    (37) relationop -> . relationop AND relationop
+    (38) relationop -> . NOT relationop
+    (39) relationop -> . ( relationop )
+    (40) relationop -> . relation
+    (41) relation -> . expression LT expression
+    (42) relation -> . expression LE expression
+    (43) relation -> . expression GT expression
+    (44) relation -> . expression GE expression
+    (45) relation -> . expression NE expression
+    (46) relation -> . expression EQUAL expression
+    (47) relation -> . TRUE
+    (48) relation -> . FALSE
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    NOT             shift and go to state 72
+    (               shift and go to state 70
+    TRUE            shift and go to state 69
+    FALSE           shift and go to state 71
+    -               shift and go to state 57
+    +               shift and go to state 56
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    casting                        shift and go to state 62
+    relationop                     shift and go to state 125
+    number                         shift and go to state 58
+    relation                       shift and go to state 68
+    functionCall                   shift and go to state 59
+    expression                     shift and go to state 73
+
+state 98
+
+    (39) relationop -> ( relationop . )
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    )               shift and go to state 126
+    OR              shift and go to state 97
+    AND             shift and go to state 95
+
+
+state 99
+
+    (55) expression -> ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+    (41) relation -> expression . LT expression
+    (42) relation -> expression . LE expression
+    (43) relation -> expression . GT expression
+    (44) relation -> expression . GE expression
+    (45) relation -> expression . NE expression
+    (46) relation -> expression . EQUAL expression
+
+    )               shift and go to state 114
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+    LT              shift and go to state 105
+    LE              shift and go to state 101
+    GT              shift and go to state 106
+    GE              shift and go to state 103
+    NE              shift and go to state 104
+    EQUAL           shift and go to state 102
+
+
+state 100
+
+    (38) relationop -> NOT relationop .
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    OR              reduce using rule 38 (relationop -> NOT relationop .)
+    AND             reduce using rule 38 (relationop -> NOT relationop .)
+    DO              reduce using rule 38 (relationop -> NOT relationop .)
+    THEN            reduce using rule 38 (relationop -> NOT relationop .)
+    )               reduce using rule 38 (relationop -> NOT relationop .)
+
+  ! OR              [ shift and go to state 97 ]
+  ! AND             [ shift and go to state 95 ]
+
+
+state 101
+
+    (42) relation -> expression LE . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 127
+    number                         shift and go to state 58
+
+state 102
+
+    (46) relation -> expression EQUAL . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 128
+    number                         shift and go to state 58
+
+state 103
+
+    (44) relation -> expression GE . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 129
+    number                         shift and go to state 58
+
+state 104
+
+    (45) relation -> expression NE . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 130
+    number                         shift and go to state 58
+
+state 105
+
+    (41) relation -> expression LT . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 131
+    number                         shift and go to state 58
+
+state 106
+
+    (43) relation -> expression GT . expression
+    (49) expression -> . expression + expression
+    (50) expression -> . expression - expression
+    (51) expression -> . expression * expression
+    (52) expression -> . expression / expression
+    (53) expression -> . - expression
+    (54) expression -> . + expression
+    (55) expression -> . ( expression )
+    (56) expression -> . number
+    (57) expression -> . ID
+    (58) expression -> . ID [ expression ]
+    (59) expression -> . casting
+    (60) expression -> . functionCall
+    (61) number -> . INTEGER
+    (62) number -> . FLOATNUM
+    (65) casting -> . INTEGER ( expression )
+    (66) casting -> . FLOAT ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    -               shift and go to state 57
+    +               shift and go to state 56
+    (               shift and go to state 55
+    ID              shift and go to state 64
+    INTEGER         shift and go to state 61
+    FLOATNUM        shift and go to state 60
+    FLOAT           shift and go to state 54
+
+    functionCall                   shift and go to state 59
+    casting                        shift and go to state 62
+    expression                     shift and go to state 132
+    number                         shift and go to state 58
+
+state 107
+
+    (32) statement -> BEGIN statementBlock END .
+
+    END             reduce using rule 32 (statement -> BEGIN statementBlock END .)
+    ;               reduce using rule 32 (statement -> BEGIN statementBlock END .)
+    ELSE            reduce using rule 32 (statement -> BEGIN statementBlock END .)
+
+
+state 108
+
+    (26) statement -> location ASIGN expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    END             reduce using rule 26 (statement -> location ASIGN expression .)
+    ;               reduce using rule 26 (statement -> location ASIGN expression .)
+    ELSE            reduce using rule 26 (statement -> location ASIGN expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 109
+
+    (68) inOutExpr -> WRITE ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    )               shift and go to state 133
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 110
+
+    (35) functionCall -> ID ( arglist . )
+
+    )               shift and go to state 134
+
+
+state 111
+
+    (64) location -> ID [ INTEGER . ]
+
+    ]               shift and go to state 135
+
+
+state 112
+
+    (33) ifthen -> IF relationop THEN . statement
+    (34) ifthenelse -> IF relationop THEN . statement ELSE statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 136
+    ifthen                         shift and go to state 38
+
+state 113
+
+    (66) casting -> FLOAT ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    )               shift and go to state 137
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 114
+
+    (55) expression -> ( expression ) .
+
+    +               reduce using rule 55 (expression -> ( expression ) .)
+    -               reduce using rule 55 (expression -> ( expression ) .)
+    *               reduce using rule 55 (expression -> ( expression ) .)
+    /               reduce using rule 55 (expression -> ( expression ) .)
+    DO              reduce using rule 55 (expression -> ( expression ) .)
+    OR              reduce using rule 55 (expression -> ( expression ) .)
+    AND             reduce using rule 55 (expression -> ( expression ) .)
+    THEN            reduce using rule 55 (expression -> ( expression ) .)
+    )               reduce using rule 55 (expression -> ( expression ) .)
+    END             reduce using rule 55 (expression -> ( expression ) .)
+    ;               reduce using rule 55 (expression -> ( expression ) .)
+    ELSE            reduce using rule 55 (expression -> ( expression ) .)
+    LT              reduce using rule 55 (expression -> ( expression ) .)
+    LE              reduce using rule 55 (expression -> ( expression ) .)
+    GT              reduce using rule 55 (expression -> ( expression ) .)
+    GE              reduce using rule 55 (expression -> ( expression ) .)
+    NE              reduce using rule 55 (expression -> ( expression ) .)
+    EQUAL           reduce using rule 55 (expression -> ( expression ) .)
+    ]               reduce using rule 55 (expression -> ( expression ) .)
+
+
+state 115
+
+    (65) casting -> INTEGER ( expression . )
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    )               shift and go to state 138
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 116
+
+    (49) expression -> expression + expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 49 (expression -> expression + expression .)
+    -               reduce using rule 49 (expression -> expression + expression .)
+    DO              reduce using rule 49 (expression -> expression + expression .)
+    OR              reduce using rule 49 (expression -> expression + expression .)
+    AND             reduce using rule 49 (expression -> expression + expression .)
+    THEN            reduce using rule 49 (expression -> expression + expression .)
+    )               reduce using rule 49 (expression -> expression + expression .)
+    END             reduce using rule 49 (expression -> expression + expression .)
+    ;               reduce using rule 49 (expression -> expression + expression .)
+    ELSE            reduce using rule 49 (expression -> expression + expression .)
+    LT              reduce using rule 49 (expression -> expression + expression .)
+    LE              reduce using rule 49 (expression -> expression + expression .)
+    GT              reduce using rule 49 (expression -> expression + expression .)
+    GE              reduce using rule 49 (expression -> expression + expression .)
+    NE              reduce using rule 49 (expression -> expression + expression .)
+    EQUAL           reduce using rule 49 (expression -> expression + expression .)
+    ]               reduce using rule 49 (expression -> expression + expression .)
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+  ! *               [ reduce using rule 49 (expression -> expression + expression .) ]
+  ! /               [ reduce using rule 49 (expression -> expression + expression .) ]
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+
+
+state 117
+
+    (51) expression -> expression * expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 51 (expression -> expression * expression .)
+    -               reduce using rule 51 (expression -> expression * expression .)
+    *               reduce using rule 51 (expression -> expression * expression .)
+    /               reduce using rule 51 (expression -> expression * expression .)
+    DO              reduce using rule 51 (expression -> expression * expression .)
+    OR              reduce using rule 51 (expression -> expression * expression .)
+    AND             reduce using rule 51 (expression -> expression * expression .)
+    THEN            reduce using rule 51 (expression -> expression * expression .)
+    )               reduce using rule 51 (expression -> expression * expression .)
+    END             reduce using rule 51 (expression -> expression * expression .)
+    ;               reduce using rule 51 (expression -> expression * expression .)
+    ELSE            reduce using rule 51 (expression -> expression * expression .)
+    LT              reduce using rule 51 (expression -> expression * expression .)
+    LE              reduce using rule 51 (expression -> expression * expression .)
+    GT              reduce using rule 51 (expression -> expression * expression .)
+    GE              reduce using rule 51 (expression -> expression * expression .)
+    NE              reduce using rule 51 (expression -> expression * expression .)
+    EQUAL           reduce using rule 51 (expression -> expression * expression .)
+    ]               reduce using rule 51 (expression -> expression * expression .)
+
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+  ! *               [ shift and go to state 89 ]
+  ! /               [ shift and go to state 91 ]
+
+
+state 118
+
+    (50) expression -> expression - expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 50 (expression -> expression - expression .)
+    -               reduce using rule 50 (expression -> expression - expression .)
+    DO              reduce using rule 50 (expression -> expression - expression .)
+    OR              reduce using rule 50 (expression -> expression - expression .)
+    AND             reduce using rule 50 (expression -> expression - expression .)
+    THEN            reduce using rule 50 (expression -> expression - expression .)
+    )               reduce using rule 50 (expression -> expression - expression .)
+    END             reduce using rule 50 (expression -> expression - expression .)
+    ;               reduce using rule 50 (expression -> expression - expression .)
+    ELSE            reduce using rule 50 (expression -> expression - expression .)
+    LT              reduce using rule 50 (expression -> expression - expression .)
+    LE              reduce using rule 50 (expression -> expression - expression .)
+    GT              reduce using rule 50 (expression -> expression - expression .)
+    GE              reduce using rule 50 (expression -> expression - expression .)
+    NE              reduce using rule 50 (expression -> expression - expression .)
+    EQUAL           reduce using rule 50 (expression -> expression - expression .)
+    ]               reduce using rule 50 (expression -> expression - expression .)
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+  ! *               [ reduce using rule 50 (expression -> expression - expression .) ]
+  ! /               [ reduce using rule 50 (expression -> expression - expression .) ]
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+
+
+state 119
+
+    (52) expression -> expression / expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    +               reduce using rule 52 (expression -> expression / expression .)
+    -               reduce using rule 52 (expression -> expression / expression .)
+    *               reduce using rule 52 (expression -> expression / expression .)
+    /               reduce using rule 52 (expression -> expression / expression .)
+    DO              reduce using rule 52 (expression -> expression / expression .)
+    OR              reduce using rule 52 (expression -> expression / expression .)
+    AND             reduce using rule 52 (expression -> expression / expression .)
+    THEN            reduce using rule 52 (expression -> expression / expression .)
+    )               reduce using rule 52 (expression -> expression / expression .)
+    END             reduce using rule 52 (expression -> expression / expression .)
+    ;               reduce using rule 52 (expression -> expression / expression .)
+    ELSE            reduce using rule 52 (expression -> expression / expression .)
+    LT              reduce using rule 52 (expression -> expression / expression .)
+    LE              reduce using rule 52 (expression -> expression / expression .)
+    GT              reduce using rule 52 (expression -> expression / expression .)
+    GE              reduce using rule 52 (expression -> expression / expression .)
+    NE              reduce using rule 52 (expression -> expression / expression .)
+    EQUAL           reduce using rule 52 (expression -> expression / expression .)
+    ]               reduce using rule 52 (expression -> expression / expression .)
+
+  ! +               [ shift and go to state 88 ]
+  ! -               [ shift and go to state 90 ]
+  ! *               [ shift and go to state 89 ]
+  ! /               [ shift and go to state 91 ]
+
+
+state 120
+
+    (58) expression -> ID [ expression . ]
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    ]               shift and go to state 139
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 121
+
+    (69) inOutExpr -> READ ( expression ) .
+
+    END             reduce using rule 69 (inOutExpr -> READ ( expression ) .)
+    ;               reduce using rule 69 (inOutExpr -> READ ( expression ) .)
+    ELSE            reduce using rule 69 (inOutExpr -> READ ( expression ) .)
+
+
+state 122
+
+    (67) inOutExpr -> PRINT ( STRING ) .
+
+    END             reduce using rule 67 (inOutExpr -> PRINT ( STRING ) .)
+    ;               reduce using rule 67 (inOutExpr -> PRINT ( STRING ) .)
+    ELSE            reduce using rule 67 (inOutExpr -> PRINT ( STRING ) .)
+
+
+state 123
+
+    (37) relationop -> relationop AND relationop .
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    OR              reduce using rule 37 (relationop -> relationop AND relationop .)
+    AND             reduce using rule 37 (relationop -> relationop AND relationop .)
+    DO              reduce using rule 37 (relationop -> relationop AND relationop .)
+    THEN            reduce using rule 37 (relationop -> relationop AND relationop .)
+    )               reduce using rule 37 (relationop -> relationop AND relationop .)
+
+  ! OR              [ shift and go to state 97 ]
+  ! AND             [ shift and go to state 95 ]
+
+
+state 124
+
+    (23) statement -> WHILE relationop DO statement .
+
+    END             reduce using rule 23 (statement -> WHILE relationop DO statement .)
+    ;               reduce using rule 23 (statement -> WHILE relationop DO statement .)
+    ELSE            reduce using rule 23 (statement -> WHILE relationop DO statement .)
+
+
+state 125
+
+    (36) relationop -> relationop OR relationop .
+    (36) relationop -> relationop . OR relationop
+    (37) relationop -> relationop . AND relationop
+
+    OR              reduce using rule 36 (relationop -> relationop OR relationop .)
+    DO              reduce using rule 36 (relationop -> relationop OR relationop .)
+    THEN            reduce using rule 36 (relationop -> relationop OR relationop .)
+    )               reduce using rule 36 (relationop -> relationop OR relationop .)
+    AND             shift and go to state 95
+
+  ! AND             [ reduce using rule 36 (relationop -> relationop OR relationop .) ]
+  ! OR              [ shift and go to state 97 ]
+
+
+state 126
+
+    (39) relationop -> ( relationop ) .
+
+    OR              reduce using rule 39 (relationop -> ( relationop ) .)
+    AND             reduce using rule 39 (relationop -> ( relationop ) .)
+    DO              reduce using rule 39 (relationop -> ( relationop ) .)
+    THEN            reduce using rule 39 (relationop -> ( relationop ) .)
+    )               reduce using rule 39 (relationop -> ( relationop ) .)
+
+
+state 127
+
+    (42) relation -> expression LE expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 42 (relation -> expression LE expression .)
+    OR              reduce using rule 42 (relation -> expression LE expression .)
+    AND             reduce using rule 42 (relation -> expression LE expression .)
+    THEN            reduce using rule 42 (relation -> expression LE expression .)
+    )               reduce using rule 42 (relation -> expression LE expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 128
+
+    (46) relation -> expression EQUAL expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 46 (relation -> expression EQUAL expression .)
+    OR              reduce using rule 46 (relation -> expression EQUAL expression .)
+    AND             reduce using rule 46 (relation -> expression EQUAL expression .)
+    THEN            reduce using rule 46 (relation -> expression EQUAL expression .)
+    )               reduce using rule 46 (relation -> expression EQUAL expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 129
+
+    (44) relation -> expression GE expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 44 (relation -> expression GE expression .)
+    OR              reduce using rule 44 (relation -> expression GE expression .)
+    AND             reduce using rule 44 (relation -> expression GE expression .)
+    THEN            reduce using rule 44 (relation -> expression GE expression .)
+    )               reduce using rule 44 (relation -> expression GE expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 130
+
+    (45) relation -> expression NE expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 45 (relation -> expression NE expression .)
+    OR              reduce using rule 45 (relation -> expression NE expression .)
+    AND             reduce using rule 45 (relation -> expression NE expression .)
+    THEN            reduce using rule 45 (relation -> expression NE expression .)
+    )               reduce using rule 45 (relation -> expression NE expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 131
+
+    (41) relation -> expression LT expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 41 (relation -> expression LT expression .)
+    OR              reduce using rule 41 (relation -> expression LT expression .)
+    AND             reduce using rule 41 (relation -> expression LT expression .)
+    THEN            reduce using rule 41 (relation -> expression LT expression .)
+    )               reduce using rule 41 (relation -> expression LT expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 132
+
+    (43) relation -> expression GT expression .
+    (49) expression -> expression . + expression
+    (50) expression -> expression . - expression
+    (51) expression -> expression . * expression
+    (52) expression -> expression . / expression
+
+    DO              reduce using rule 43 (relation -> expression GT expression .)
+    OR              reduce using rule 43 (relation -> expression GT expression .)
+    AND             reduce using rule 43 (relation -> expression GT expression .)
+    THEN            reduce using rule 43 (relation -> expression GT expression .)
+    )               reduce using rule 43 (relation -> expression GT expression .)
+    +               shift and go to state 88
+    -               shift and go to state 90
+    *               shift and go to state 89
+    /               shift and go to state 91
+
+
+state 133
+
+    (68) inOutExpr -> WRITE ( expression ) .
+
+    END             reduce using rule 68 (inOutExpr -> WRITE ( expression ) .)
+    ;               reduce using rule 68 (inOutExpr -> WRITE ( expression ) .)
+    ELSE            reduce using rule 68 (inOutExpr -> WRITE ( expression ) .)
+
+
+state 134
+
+    (35) functionCall -> ID ( arglist ) .
+
+    )               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    +               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    -               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    *               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    /               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    END             reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    ;               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    ELSE            reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    LT              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    LE              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    GT              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    GE              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    NE              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    EQUAL           reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    ]               reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    DO              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    OR              reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    AND             reduce using rule 35 (functionCall -> ID ( arglist ) .)
+    THEN            reduce using rule 35 (functionCall -> ID ( arglist ) .)
+
+
+state 135
+
+    (64) location -> ID [ INTEGER ] .
+
+    ASIGN           reduce using rule 64 (location -> ID [ INTEGER ] .)
+
+
+state 136
+
+    (33) ifthen -> IF relationop THEN statement .
+    (34) ifthenelse -> IF relationop THEN statement . ELSE statement
+
+    END             reduce using rule 33 (ifthen -> IF relationop THEN statement .)
+    ;               reduce using rule 33 (ifthen -> IF relationop THEN statement .)
+    ELSE            shift and go to state 140
+
+  ! ELSE            [ reduce using rule 33 (ifthen -> IF relationop THEN statement .) ]
+
+
+state 137
+
+    (66) casting -> FLOAT ( expression ) .
+
+    LT              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    LE              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    GT              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    GE              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    NE              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    EQUAL           reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    +               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    -               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    *               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    /               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    DO              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    OR              reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    AND             reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    THEN            reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    )               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    END             reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    ;               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    ELSE            reduce using rule 66 (casting -> FLOAT ( expression ) .)
+    ]               reduce using rule 66 (casting -> FLOAT ( expression ) .)
+
+
+state 138
+
+    (65) casting -> INTEGER ( expression ) .
+
+    LT              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    LE              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    GT              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    GE              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    NE              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    EQUAL           reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    +               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    -               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    *               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    /               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    DO              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    OR              reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    AND             reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    THEN            reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    )               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    END             reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    ;               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    ELSE            reduce using rule 65 (casting -> INTEGER ( expression ) .)
+    ]               reduce using rule 65 (casting -> INTEGER ( expression ) .)
+
+
+state 139
+
+    (58) expression -> ID [ expression ] .
+
+    +               reduce using rule 58 (expression -> ID [ expression ] .)
+    -               reduce using rule 58 (expression -> ID [ expression ] .)
+    *               reduce using rule 58 (expression -> ID [ expression ] .)
+    /               reduce using rule 58 (expression -> ID [ expression ] .)
+    DO              reduce using rule 58 (expression -> ID [ expression ] .)
+    OR              reduce using rule 58 (expression -> ID [ expression ] .)
+    AND             reduce using rule 58 (expression -> ID [ expression ] .)
+    THEN            reduce using rule 58 (expression -> ID [ expression ] .)
+    )               reduce using rule 58 (expression -> ID [ expression ] .)
+    END             reduce using rule 58 (expression -> ID [ expression ] .)
+    ;               reduce using rule 58 (expression -> ID [ expression ] .)
+    ELSE            reduce using rule 58 (expression -> ID [ expression ] .)
+    LT              reduce using rule 58 (expression -> ID [ expression ] .)
+    LE              reduce using rule 58 (expression -> ID [ expression ] .)
+    GT              reduce using rule 58 (expression -> ID [ expression ] .)
+    GE              reduce using rule 58 (expression -> ID [ expression ] .)
+    NE              reduce using rule 58 (expression -> ID [ expression ] .)
+    EQUAL           reduce using rule 58 (expression -> ID [ expression ] .)
+    ]               reduce using rule 58 (expression -> ID [ expression ] .)
+
+
+state 140
+
+    (34) ifthenelse -> IF relationop THEN statement ELSE . statement
+    (23) statement -> . WHILE relationop DO statement
+    (24) statement -> . ifthen
+    (25) statement -> . ifthenelse
+    (26) statement -> . location ASIGN expression
+    (27) statement -> . inOutExpr
+    (28) statement -> . RETURN expression
+    (29) statement -> . functionCall
+    (30) statement -> . SKIP
+    (31) statement -> . BREAK
+    (32) statement -> . BEGIN statementBlock END
+    (33) ifthen -> . IF relationop THEN statement
+    (34) ifthenelse -> . IF relationop THEN statement ELSE statement
+    (63) location -> . ID
+    (64) location -> . ID [ INTEGER ]
+    (67) inOutExpr -> . PRINT ( STRING )
+    (68) inOutExpr -> . WRITE ( expression )
+    (69) inOutExpr -> . READ ( expression )
+    (35) functionCall -> . ID ( arglist )
+
+    WHILE           shift and go to state 37
+    RETURN          shift and go to state 33
+    SKIP            shift and go to state 43
+    BREAK           shift and go to state 48
+    BEGIN           shift and go to state 39
+    IF              shift and go to state 47
+    ID              shift and go to state 46
+    PRINT           shift and go to state 36
+    WRITE           shift and go to state 44
+    READ            shift and go to state 34
+
+    ifthenelse                     shift and go to state 42
+    inOutExpr                      shift and go to state 35
+    functionCall                   shift and go to state 45
+    location                       shift and go to state 40
+    statement                      shift and go to state 141
+    ifthen                         shift and go to state 38
+
+state 141
+
+    (34) ifthenelse -> IF relationop THEN statement ELSE statement .
+
+    END             reduce using rule 34 (ifthenelse -> IF relationop THEN statement ELSE statement .)
+    ;               reduce using rule 34 (ifthenelse -> IF relationop THEN statement ELSE statement .)
+    ELSE            reduce using rule 34 (ifthenelse -> IF relationop THEN statement ELSE statement .)
+
