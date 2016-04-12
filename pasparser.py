@@ -2,6 +2,7 @@
 import ply.yacc as yacc
 import re
 from paslex import tokens
+import paslex
 import sys
 
 # -----------------------------------------------
@@ -9,21 +10,21 @@ import sys
 # -----------------------------------------------
 class Node:
     def __init__(self, name, children=None, leaf=None):
-        self.name = type
+        self.name = name
         if children:
             self.children = children
         else:
             self.children = []
-            self.leaf = leaf
+        self.leaf = leaf
 
     def append(self, node):
         self.children.append(node)
 
     def __str__(self):
-        return "<%s>" % self.name
+        return "<%s>" % name
 
     def __repr__(self):
-        return "<%s>" % self.name
+        return "<%s>" % name
 
 # -----------------------------------------------
 # Parser
@@ -63,6 +64,7 @@ precedence = (
     ('left', 'OR'),
     ('left', 'AND'),
     ('left', 'NOT'),
+    ('left', 'LT', 'LE', 'GT', 'GE', 'NE'),
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('right', 'UMINUS'),
@@ -140,10 +142,6 @@ def p_type_specifier2(p):
     "type_specifier : simple_type '[' INTEGER ']'"
     p[0] = Node("Array[index]", [p[1]],leaf=p[3])
 
-# def p_type_specifier3(p):
-#     "type_specifier : INT '[' INTEGER ']'"
-#     p[0] = Node("Int[index]", leaf=p[3])
-
 def p_type_int(p):
     "simple_type : INT"
     p[0] = Node("INT")
@@ -207,31 +205,32 @@ def p_ifthen(p):
 
 def p_ifthenelse(p):
     'ifthenelse : IF relation THEN statement ELSE statement'
-    p[0] = Node("If then else", [p[2], p[4], p[5]])
+    p[0] = Node("If then else", [p[2], p[4], p[6]])
 
 def p_functionCall(p):
-    "functionCall : ID '(' paramslistop ')'"
+    "functionCall : ID '(' paramslistop ')' %prec UMINUS"
     p[0] = Node("Function Call", [p[3]], leaf=p[1])
 
 def p_paramsListOp1(p):
     "paramslistop : paramList"
-    pass
+    p[0] = p[1]
 
 def p_paramsListOp2(p):
     "paramslistop : empty"
-    pass
+    p[0] = p[1]
 
 def p_paramList1(p):
     "paramList : paramList ',' expression"
-    pass
+    p[1].append(p[3])
+    p[0] = p[1]
 
 def p_paramList2(p):
     "paramList : expression"
-    pass
+    p[0] = p[1]
 
 def p_inOutExpr1(p):
     "inOutExpr : PRINT '(' STRING ')'"
-    p[0] = Node("PRINT", [p[3]])
+    p[0] = Node("PRINT", leaf=p[3])
 
 def p_inOutExpr2(p):
     "inOutExpr : WRITE '(' expression ')'"
@@ -318,7 +317,7 @@ def p_expr_uminus(p):
     p[0] = Node("Expression", [p[2]], p[1])
 
 def p_expr_uplus(p):
-    "expression : '+' expression"
+    "expression : '+' expression %prec UMINUS"
     p[0] = Node("Expression", [p[2]])
 
 def p_expr_parens(p):
@@ -335,7 +334,7 @@ def p_expr_num(p):
 
 def p_expr_ubication(p):
     "expression : ID '[' expression ']'"
-    p[0] = Node("Expression", [p[3]], p[1])
+    p[0] = Node("Expression", [p[3]], leaf=p[1])
 
 def p_expr_casting(p):
     "expression : casting"
@@ -355,11 +354,11 @@ def p_casting_float(p):
 
 def p_number_int(p):
     "number : INTEGER"
-    p[0] = Node("INTEGER", [p[1]])
+    p[0] = Node("INTEGER", leaf=p[1])
 
 def p_number_float(p):
     "number : FLOATNUM"
-    p[0] = Node("FLOAT", [p[1]])
+    p[0] = Node("FLOAT", leaf=p[1])
 
 def p_empty(p):
     "empty : "
@@ -369,8 +368,9 @@ def p_error(p):
     print("Error en la entrada!")
     print p
 
-def make_parser():
-    parser = yacc.yacc(debug=0)
+def make_parser(showLexer=0):
+    lexer = paslex.make_lexer(showLexer)
+    parser = yacc.yacc(debug=1)
     return parser
 
 # ===================================
@@ -378,7 +378,6 @@ def make_parser():
 # ===================================
 
 def dump_tree(n, indent = ""):
-
     if not hasattr(n, "datatype"):
         datatype = ""
     else:
@@ -399,57 +398,31 @@ def dump_tree(n, indent = ""):
         else:
             dump_tree(c, indent + "|-- ")
 
-# def dump_tree(node, indent = ""):
-#     #print node
-#     if not hasattr(node, "datatype"):
-# 		datatype = ""
-#     else:
-# 		datatype = node.datatype
-#
-#     if(node.__class__.__name__ != "str" and node.__class__.__name__ != "list"):
-#         print "%s%s  %s" % (indent, node.__class__.__name__, datatype)
-#
-#     indent = indent.replace("-"," ")
-#     indent = indent.replace("+"," ")
-#     if hasattr(node,'_fields'):
-#         mio = node._fields
-#     else:
-#         mio = node
-#     if(isinstance(mio,list)):
-#         for i in range(len(mio)):
-#             if(isinstance(mio[i],str) ):
-#                 c = getattr(node,mio[i])
-#             else:
-#              c = mio[i]
-#             if i == len(mio)-1:
-# 		    	dump_tree(c, indent + "  +-- ")
-#             else:
-# 		    	dump_tree(c, indent + "  |-- ")
-#     else:
-#         print indent, mio
-
 # ===================================
 # Imprimir AST
 # ===================================
-
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print "Usage: python %s [-ast] [-lex] <pascal_file>" % sys.argv[0]
     elif (re.match(r'.*\.pas', sys.argv[-1])):
         try:
+            showAST = showLex = False
             for i in sys.argv:
                 if (i == "-ast"):
-                    print "Get ast op"
+                    showAST = True
                 if (i == "-lex"):
-                    print "Get lex op"
+                    showLex = True
+                    print "Get lex op correr lex"
 
             file = open(sys.argv[-1])
             data = file.read()
-            parser = make_parser()
+            parser = make_parser(showLex)
             result = parser.parse(data)
-            # dump_tree(result)
-            print result
+
+            if (showAST):
+                dump_tree(result)
+
         except IOError:
             print "Error: The file does not exist"
             print "Usage: python %s [-ast] [-lex] <pascal_file>" % sys.argv[0]
@@ -460,12 +433,12 @@ if __name__ == "__main__":
 ... refactor
 ? ask
 
-program: fun_list
+program: funlist
 
-fun_list: fun_list fun
-        | fun
+funlist: funlist function
+        | function
 
-fun: FUN ID '(' arglist ')' localslist BEGIN statementBlock END
+function: FUN ID '(' arglist ')' localslist BEGIN statementBlock END
 
 arglist: args
        | empty
@@ -473,23 +446,25 @@ arglist: args
 args: args ',' var_decl
     | var_decl
 
-var_decl: ID ':' type_specifier
-
-type_specifier: INT LSQUARE INTEGER RSQUARE
-              | FLOAT LSQUARE INTEGER RSQUARE
-              | type
-
-type: INT
-    | FLOAT
-
 localsList: locals
           | empty
 
-locals: declaration_local ';'
-      | locals declaration_local ';'
+locals: locals declaration_local ';'
+      | declaration_local ';'
 
 declaration_local: var_decl
-        | fun
+        | function
+
+var_decl: ID ':' type_specifier
+
+type_specifier: simple_type
+              | simple_type '[' INTEGER ']' ... expr?
+
+simple_type: INT
+           | FLOAT
+
+type: INT
+    | FLOAT
 
 statementBlock : statementBlock ';' statement
           | statement
@@ -497,24 +472,29 @@ statementBlock : statementBlock ';' statement
 statement: WHILE relation DO statement
          |  IF relation THEN statement // ifthen
          |  IF relation THEN statement %prec ELSE statement // ifthenelse
-         |  assigment
+         |  location ASIGN expression
          |  inOutExpr
-         |  RETURN expression ...
+         |  RETURN expression ... expression optional
          |  functionCall
          |  SKIP
          |  BREAK
          |  BEGIN statementBlock END
 
-functionCall: ID LPAREN arglist RPAREN
+functionCall: ID '(' paramslistop ')'
 
-->
+paramslistop: paramList
+            | empty
+
+paramList: paramList ',' expression
+         | expression
+
 relation: relation OR relation
-          | relation AND relation
-          | NOT relation
-          | LPAREN relation RPAREN
-          | relation
-
-relation: expression LT expression
+        | relation AND relation
+        | NOT relation
+        | '(' relation ')'
+        | ID
+        | ID '[' expression ']' //errors: type errors
+        | expression LT expression
         | expression LE expression
         | expression GT expression
         | expression GE expression
@@ -529,24 +509,33 @@ expression: expression '+' expression
           | expression '/' expression
           | '-' expression
           | '+' expression
-          | LPAREN expression RPAREN
+          | '(' expression ')'
           | ID // location
-          | ID LSQUARE expression RSQUARE
+          | ID '[' expression ']'
           | number
           | ID LPAREN expression RPAREN
           | casting
           | functionCall
 
-number: INTEGER
-      | FLOATNUM
-
-location: ID
-        | ID LSQUARE INTEGER RSQUARE //errors: index must be int, type errors
-
 inOutExpr: PRINT LPAREN STRING RPAREN
          | WRITE LPAREN expression RPAREN
          | READ LPAREN location RPAREN
 
-casting: FLOAT LPAREN expression RPAREN
-       | INT LPAREN expression RPAREN
+casting: FLOAT '(' expression ')'
+       | INT '(' expression ')'
+
+number: INTEGER
+      | FLOATNUM
+
+notes:
+
+funtion : fun parmlist varlist BEGIN statement END
+p[1].append(p[2])
+p[1].append(p[3])
+p[1].append(p[5])
+p[0] = p[1]
+
+fun : FUN ID
+    | FUN // error
+    // error con id's que no cumplam con nombres validos
 '''

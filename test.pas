@@ -43,7 +43,7 @@ begin
   i := 0;
   while i<n do
     begin
-      tmp := quicksort(i, r, a)
+      tmp := quicksort(i, r, a);
       read(v[i]);
       i := i+1
     end;
