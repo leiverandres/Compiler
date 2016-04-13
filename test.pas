@@ -51,7 +51,8 @@ begin
   i := 0;
   while i<n-1 do
     begin
-      write(v[i]); print(" ");
+      write(v[i]);
+      print(" ");
       if 0 < v[i] - v[i+1] then
         begin
           print("Quicksort falló "); write(i); print("\n") ; return(0)

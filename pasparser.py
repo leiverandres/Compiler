@@ -1,64 +1,10 @@
 # coding: utf-8
 import ply.yacc as yacc
+from pasAST import *
 import re
 from paslex import tokens
 import paslex
 import sys
-
-# -----------------------------------------------
-# AST
-# -----------------------------------------------
-class Node:
-    def __init__(self, name, children=None, leaf=None):
-        self.name = name
-        if children:
-            self.children = children
-        else:
-            self.children = []
-        self.leaf = leaf
-
-    def append(self, node):
-        self.children.append(node)
-
-    def __str__(self):
-        return "<%s>" % name
-
-    def __repr__(self):
-        return "<%s>" % name
-
-# -----------------------------------------------
-# Parser
-# -----------------------------------------------
-
-# ===================================
-# Imprimir AST
-# ===================================
-
-def dump_tree(n, indent = ""):
-    print "hi"
-    if not hasattr(n, "datatype"):
-        datatype = ""
-    else:
-        datatype = n.datatype
-
-    if not n.leaf:
-        print "%s%s %s" % (indent, n.name, datatype)
-    else:
-        print "%s%s (%s) %s" % (indent, n.name, n.leaf, datatype)
-
-    indent = indent.replace("-"," ")
-    indent = indent.replace("+"," ")
-
-    for i in range(len(n.children)):
-        c = n.children[i]
-        if i == len(n.children)-1:
-            dump_tree(c, indent + "+-- ")
-        else:
-            dump_tree(c, indent + "|-- ")
-
-# ===================================
-# Imprimir AST
-# ===================================
 
 precedence = (
     ('left', 'OR'),
@@ -73,7 +19,7 @@ precedence = (
 
 def p_program(p):
     "program : funlist"
-    p[0] = Node("program", [p[1]])
+    p[0] = p[1]
 
 def p_fun_list(p):
     "funlist : funlist function"
@@ -82,7 +28,7 @@ def p_fun_list(p):
 
 def p_funList_function(p):
     "funlist : function"
-    p[0] = Node("Funlist", [p[1]])
+    p[0] = Node("Program", [p[1]])
 
 def p_function(p):
     "function : FUN ID '(' arglist ')' localslist BEGIN statementBlock END"
@@ -90,7 +36,7 @@ def p_function(p):
 
 def p_arglist(p):
     "arglist : args"
-    p[0] = Node("ArgList", [p[1]])
+    p[0] = p[1]
 
 def p_arglist_empty(p):
     "arglist : empty"
@@ -103,7 +49,7 @@ def p_args(p):
 
 def p_args_argument(p):
     "args : var_decl"
-    p[0] = Node("Args", [p[1]])
+    p[0] = Node("Argument List", [p[1]])
 
 def p_localList_locals(p):
     "localslist : locals"
@@ -120,19 +66,19 @@ def p_locals(p):
 
 def p_locals_localDecl(p):
     "locals : declaration_local ';'"
-    p[0] = p[1]
+    p[0] = Node("Locals List", [p[1]])
 
 def p_localDecl_varDecl(p):
     "declaration_local : var_decl"
-    p[0] = Node("Locals declaration", [p[1]])
+    p[0] = p[1]
 
 def p_localDecl_fun(p):
     "declaration_local : function"
-    p[0] = Node("Locals Declaration", [p[1]])
+    p[0] = p[1]
 
 def p_var_decl(p):
     "var_decl : ID ':' type_specifier"
-    p[0] = Node("VarDecl", [p[3]], p[1])
+    p[0] = Node("Variable", [p[3]], p[1])
 
 def p_type_specifier1(p):
     "type_specifier : simple_type"
@@ -140,15 +86,15 @@ def p_type_specifier1(p):
 
 def p_type_specifier2(p):
     "type_specifier : simple_type '[' INTEGER ']'"
-    p[0] = Node("Array[index]", [p[1]],leaf=p[3])
+    p[0] = Node("Array[index]", [p[1]], leaf=p[3])
 
 def p_type_int(p):
     "simple_type : INT"
-    p[0] = Node("INT")
+    p[0] = Node("INT", leaf=p[1])
 
 def p_type_float(p):
     "simple_type : FLOAT"
-    p[0] = Node("FLOAT")
+    p[0] = Node("FLOAT", leaf=p[1])
 
 def p_statementBlock(p):
     "statementBlock : statementBlock ';' statement"
@@ -157,7 +103,8 @@ def p_statementBlock(p):
 
 def p_statement(p):
     "statementBlock : statement"
-    p[0] = Node("Statement Block", [p[1]])
+    # p[0] = Node("Statement Block", [p[1]])
+    p[0] = p[1]
 
 def p_statement_while(p):
     "statement : WHILE relation DO statement"
@@ -183,6 +130,10 @@ def p_statement_return(p):
     "statement : RETURN expression"
     p[0] = Node("RETURN", [p[2]])
 
+def p_statement_return2(p):
+    "statement : RETURN"
+    p[0] = Node("RETURN empty")
+
 def p_statement_call(p):
     "statement : functionCall"
     p[0] = p[1]
@@ -197,7 +148,7 @@ def p_statement_break(p):
 
 def p_statement_block(p):
     "statement : BEGIN statementBlock END"
-    p[0] = Node("BeginEnd Block", [p[2]])
+    p[0] = Node("Begin-End Block", [p[2]])
 
 def p_ifthen(p):
     'ifthen : IF relation THEN statement %prec ELSE'
@@ -226,7 +177,7 @@ def p_paramList1(p):
 
 def p_paramList2(p):
     "paramList : expression"
-    p[0] = p[1]
+    p[0] = Node("Param List", [p[1]])
 
 def p_inOutExpr1(p):
     "inOutExpr : PRINT '(' STRING ')'"
@@ -242,7 +193,7 @@ def p_inOutExpr3(p):
 
 def p_location1(p):
     "location : ID"
-    p[0] = Node("ID")
+    p[0] = Node("ID", leaf=p[1])
 
 def p_location2(p):
     "location : ID '[' expression ']'"
@@ -250,43 +201,43 @@ def p_location2(p):
 
 def p_relationop1(p):
     "relation : relation OR relation"
-    p[0] = Node("Relation op", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relationop2(p):
     "relation : relation AND relation"
-    p[0] = Node("Relation op", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relationop3(p):
     "relation : NOT relation"
-    p[0] = Node("Relation op", [p[2]], p[1])
+    p[0] = Node("Relation", [p[2]], p[1])
 
 def p_relationop4(p):
     "relation : '(' relation ')'"
-    p[0] = Node("Relation op", [p[2]])
+    p[0] = p[2]
 
 def p_relation_LT(p):
     "relation : expression LT expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_LE(p):
     "relation : expression LE expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_GT(p):
     "relation : expression GT expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_GE(p):
     "relation : expression GE expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_NE(p):
     "relation : expression NE expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_equal(p):
     "relation : expression EQUAL expression"
-    p[0] = Node("Relation", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Relation", [p[1], p[3]], p[2])
 
 def p_relation_true(p):
     "relation : TRUE"
@@ -298,35 +249,37 @@ def p_relation_false(p):
 
 def p_expr_plus(p):
     "expression : expression '+' expression"
-    p[0] = Node("Expression", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Operation", [p[1], p[3]], p[2])
 
 def p_expr_minus(p):
     "expression : expression '-' expression"
-    p[0] = Node("Expression", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Operation", [p[1], p[3]], p[2])
 
 def p_expr_times(p):
     "expression : expression '*' expression"
-    p[0] = Node("Expression", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Operation", [p[1], p[3]], p[2])
 
 def p_expr_div(p):
     "expression : expression '/' expression"
-    p[0] = Node("Expression", [p[1], p[3]], p[2])
+    p[0] = Node("Binary Operation", [p[1], p[3]], p[2])
 
 def p_expr_uminus(p):
     "expression : '-' expression %prec UMINUS"
-    p[0] = Node("Expression", [p[2]], p[1])
+    p[0] = Node("UMINUS expr", [p[2]], p[1])
 
 def p_expr_uplus(p):
     "expression : '+' expression %prec UMINUS"
-    p[0] = Node("Expression", [p[2]])
+    # p[0] = Node("Expression", [p[2]])
+    p[0] = p[2]
 
 def p_expr_parens(p):
     "expression : '(' expression ')'"
-    p[0] = Node("Expression", [p[2]])
+    # p[0] = Node("Expression", [p[2]])
+    p[0] = p[2]
 
 def p_expr_id(p):
     "expression : ID"
-    p[0] = Node("ID")
+    p[0] = Node("ID", leaf=p[1])
 
 def p_expr_num(p):
     "expression : number"
@@ -334,7 +287,7 @@ def p_expr_num(p):
 
 def p_expr_ubication(p):
     "expression : ID '[' expression ']'"
-    p[0] = Node("Expression", [p[3]], leaf=p[1])
+    p[0] = Node("ID[expr]", [p[3]], leaf=p[1])
 
 def p_expr_casting(p):
     "expression : casting"
@@ -373,34 +326,7 @@ def make_parser(showLexer=0):
     parser = yacc.yacc(debug=1)
     return parser
 
-# ===================================
-# Imprimir AST
-# ===================================
 
-def dump_tree(n, indent = ""):
-    if not hasattr(n, "datatype"):
-        datatype = ""
-    else:
-        datatype = n.datatype
-
-    if not n.leaf:
-        print "%s%s %s" % (indent, n.name, datatype)
-    else:
-        print "%s%s (%s) %s" % (indent, n.name, n.leaf, datatype)
-
-    indent = indent.replace("-"," ")
-    indent = indent.replace("+"," ")
-
-    for i in range(len(n.children)):
-        c = n.children[i]
-        if i == len(n.children)-1:
-            dump_tree(c, indent + "+-- ")
-        else:
-            dump_tree(c, indent + "|-- ")
-
-# ===================================
-# Imprimir AST
-# ===================================
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
@@ -458,7 +384,7 @@ declaration_local: var_decl
 var_decl: ID ':' type_specifier
 
 type_specifier: simple_type
-              | simple_type '[' INTEGER ']' ... expr?
+              | simple_type '[' INTEGER ']' ... expr? // error
 
 simple_type: INT
            | FLOAT
@@ -474,7 +400,7 @@ statement: WHILE relation DO statement
          |  IF relation THEN statement %prec ELSE statement // ifthenelse
          |  location ASIGN expression
          |  inOutExpr
-         |  RETURN expression ... expression optional
+         |  RETURN expression
          |  functionCall
          |  SKIP
          |  BREAK
