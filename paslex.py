@@ -102,13 +102,32 @@ def find_colum(input, token):
     column = (token.lexpos - last_cr) + 1
     return column
 
+# def t_eof(t):
+#     more = raw_input('... ')
+#     if more:
+#         self.lexer.input(more)
+#         return self.lexer.token()
+#     return None
+
 def t_error(t):
     print("Illegal character %s line: %d col: %d" % (repr(t.value[0]), t.lineno, find_colum(lexer.lexdata, t)))
     t.lexer.skip(1)
 
-def make_lexer(value):
-    return lex.lex(debug=value)
+def make_lexer():
+    lexer = lex.lex(debug=0)
+    return lexer
+
+def run_lexer(data):
+    lexer = make_lexer()
+    lexer.input(data)
+    for tok in iter(lexer.token, None):
+        if tok:
+            print(tok)
 
 if __name__ == '__main__':
-    make_lexer()
-    lex.runmain()
+    import sys
+    if (len(sys.argv) == 2):
+        data = open(sys.argv[1]).read()
+        run_lexer(data)
+    else:
+        print ("Usage: python %s <file.pas>" % sys.argv[0])
