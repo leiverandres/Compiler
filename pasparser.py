@@ -8,8 +8,8 @@ import sys
 # AST
 # -----------------------------------------------
 class Node:
-    def __init__(self, type, children=None, leaf=None):
-        self.type = type
+    def __init__(self, name, children=None, leaf=None):
+        self.name = type
         if children:
             self.children = children
         else:
@@ -20,14 +20,45 @@ class Node:
         self.children.append(node)
 
     def __str__(self):
-        return "<%s>" % name
+        return "<%s>" % self.name
 
     def __repr__(self):
-        return "<%s>" % name
+        return "<%s>" % self.name
 
 # -----------------------------------------------
 # Parser
 # -----------------------------------------------
+
+# ===================================
+# Imprimir AST
+# ===================================
+
+def dump_tree(n, indent = ""):
+    print "hi"
+    if not hasattr(n, "datatype"):
+        datatype = ""
+    else:
+        datatype = n.datatype
+
+    if not n.leaf:
+        print "%s%s %s" % (indent, n.name, datatype)
+    else:
+        print "%s%s (%s) %s" % (indent, n.name, n.leaf, datatype)
+
+    indent = indent.replace("-"," ")
+    indent = indent.replace("+"," ")
+
+    for i in range(len(n.children)):
+        c = n.children[i]
+        if i == len(n.children)-1:
+            dump_tree(c, indent + "+-- ")
+        else:
+            dump_tree(c, indent + "|-- ")
+
+# ===================================
+# Imprimir AST
+# ===================================
+
 precedence = (
     ('left', 'OR'),
     ('left', 'AND'),
@@ -72,30 +103,6 @@ def p_args_argument(p):
     "args : var_decl"
     p[0] = Node("Args", [p[1]])
 
-def p_var_decl(p):
-    "var_decl : ID ':' type_specifier"
-    p[0] = Node("VarDecl", [p[3]], p[1])
-
-def p_type_specifier1(p):
-    "type_specifier : type"
-    p[0] = p[1]
-
-def p_type_specifier2(p):
-    "type_specifier : FLOAT '[' INTEGER ']'"
-    p[0] = Node("Float[index]", leaf=p[3])
-
-def p_type_specifier3(p):
-    "type_specifier : INT '[' INTEGER ']'"
-    p[0] = Node("Int[index]", leaf=p[3])
-
-def p_type_int(p):
-    "type : INT"
-    p[0] = Node("INT")
-
-def p_type_float(p):
-    "type : FLOAT"
-    p[0] = Node("FLOAT")
-
 def p_localList_locals(p):
     "localslist : locals"
     p[0] = p[1]
@@ -121,6 +128,30 @@ def p_localDecl_fun(p):
     "declaration_local : function"
     p[0] = Node("Locals Declaration", [p[1]])
 
+def p_var_decl(p):
+    "var_decl : ID ':' type_specifier"
+    p[0] = Node("VarDecl", [p[3]], p[1])
+
+def p_type_specifier1(p):
+    "type_specifier : simple_type"
+    p[0] = p[1]
+
+def p_type_specifier2(p):
+    "type_specifier : simple_type '[' INTEGER ']'"
+    p[0] = Node("Array[index]", [p[1]],leaf=p[3])
+
+# def p_type_specifier3(p):
+#     "type_specifier : INT '[' INTEGER ']'"
+#     p[0] = Node("Int[index]", leaf=p[3])
+
+def p_type_int(p):
+    "simple_type : INT"
+    p[0] = Node("INT")
+
+def p_type_float(p):
+    "simple_type : FLOAT"
+    p[0] = Node("FLOAT")
+
 def p_statementBlock(p):
     "statementBlock : statementBlock ';' statement"
     p[1].append(p[3])
@@ -131,7 +162,7 @@ def p_statement(p):
     p[0] = Node("Statement Block", [p[1]])
 
 def p_statement_while(p):
-    "statement : WHILE relationop DO statement"
+    "statement : WHILE relation DO statement"
     p[0] = Node("While", [p[2], p[4]])
 
 def p_statement_ifthen(p):
@@ -171,36 +202,68 @@ def p_statement_block(p):
     p[0] = Node("BeginEnd Block", [p[2]])
 
 def p_ifthen(p):
-    'ifthen : IF relationop THEN statement %prec ELSE'
+    'ifthen : IF relation THEN statement %prec ELSE'
     p[0] = Node("If then", [p[2], p[4]])
 
 def p_ifthenelse(p):
-    'ifthenelse : IF relationop THEN statement ELSE statement'
+    'ifthenelse : IF relation THEN statement ELSE statement'
     p[0] = Node("If then else", [p[2], p[4], p[5]])
 
 def p_functionCall(p):
-    "functionCall : ID '(' arglist ')'"
+    "functionCall : ID '(' paramslistop ')'"
     p[0] = Node("Function Call", [p[3]], leaf=p[1])
 
+def p_paramsListOp1(p):
+    "paramslistop : paramList"
+    pass
+
+def p_paramsListOp2(p):
+    "paramslistop : empty"
+    pass
+
+def p_paramList1(p):
+    "paramList : paramList ',' expression"
+    pass
+
+def p_paramList2(p):
+    "paramList : expression"
+    pass
+
+def p_inOutExpr1(p):
+    "inOutExpr : PRINT '(' STRING ')'"
+    p[0] = Node("PRINT", [p[3]])
+
+def p_inOutExpr2(p):
+    "inOutExpr : WRITE '(' expression ')'"
+    p[0] = Node("WRITE", [p[3]])
+
+def p_inOutExpr3(p):
+    "inOutExpr : READ '(' location ')'"
+    p[0] = Node("READ", [p[3]])
+
+def p_location1(p):
+    "location : ID"
+    p[0] = Node("ID")
+
+def p_location2(p):
+    "location : ID '[' expression ']'"
+    p[0] = Node("Location", [p[3]], p[1])
+
 def p_relationop1(p):
-    "relationop : relationop OR relationop"
+    "relation : relation OR relation"
     p[0] = Node("Relation op", [p[1], p[3]], p[2])
 
 def p_relationop2(p):
-    "relationop : relationop AND relationop"
+    "relation : relation AND relation"
     p[0] = Node("Relation op", [p[1], p[3]], p[2])
 
 def p_relationop3(p):
-    "relationop : NOT relationop"
+    "relation : NOT relation"
     p[0] = Node("Relation op", [p[2]], p[1])
 
 def p_relationop4(p):
-    "relationop : '(' relationop ')'"
+    "relation : '(' relation ')'"
     p[0] = Node("Relation op", [p[2]])
-
-def p_relationop5(p):
-    "relationop : relation"
-    p[0] = p[1]
 
 def p_relation_LT(p):
     "relation : expression LT expression"
@@ -243,8 +306,8 @@ def p_expr_minus(p):
     p[0] = Node("Expression", [p[1], p[3]], p[2])
 
 def p_expr_times(p):
- "expression : expression '*' expression"
- p[0] = Node("Expression", [p[1], p[3]], p[2])
+    "expression : expression '*' expression"
+    p[0] = Node("Expression", [p[1], p[3]], p[2])
 
 def p_expr_div(p):
     "expression : expression '/' expression"
@@ -282,33 +345,13 @@ def p_expr_funcall(p):
     "expression : functionCall"
     p[0] = p[1]
 
-def p_location1(p):
-    "location : ID"
-    p[0] = Node("ID")
-
-def p_location2(p):
-    "location : ID '[' INTEGER ']'"
-    p[0] = Node("Location", [p[3]], p[1])
-
 def p_casting_int(p):
-    "casting : INTEGER '(' expression ')'"
+    "casting : INT '(' expression ')'"
     p[0] = Node("Casting Int", [p[3]], leaf=int(p[3]))
 
 def p_casting_float(p):
     "casting : FLOAT '(' expression ')'"
     p[0] = Node("Casting Float", [p[3]], leaf=float(p[3]))
-
-def p_inOutExpr1(p):
-    "inOutExpr : PRINT '(' STRING ')'"
-    p[0] = Node("PRINT", [p[3]])
-
-def p_inOutExpr2(p):
-    "inOutExpr : WRITE '(' expression ')'"
-    p[0] = Node("WRITE", [p[3]])
-
-def p_inOutExpr3(p):
-    "inOutExpr : READ '(' expression ')'"
-    p[0] = Node("READ", [p[3]])
 
 def p_number_int(p):
     "number : INTEGER"
@@ -356,6 +399,40 @@ def dump_tree(n, indent = ""):
         else:
             dump_tree(c, indent + "|-- ")
 
+# def dump_tree(node, indent = ""):
+#     #print node
+#     if not hasattr(node, "datatype"):
+# 		datatype = ""
+#     else:
+# 		datatype = node.datatype
+#
+#     if(node.__class__.__name__ != "str" and node.__class__.__name__ != "list"):
+#         print "%s%s  %s" % (indent, node.__class__.__name__, datatype)
+#
+#     indent = indent.replace("-"," ")
+#     indent = indent.replace("+"," ")
+#     if hasattr(node,'_fields'):
+#         mio = node._fields
+#     else:
+#         mio = node
+#     if(isinstance(mio,list)):
+#         for i in range(len(mio)):
+#             if(isinstance(mio[i],str) ):
+#                 c = getattr(node,mio[i])
+#             else:
+#              c = mio[i]
+#             if i == len(mio)-1:
+# 		    	dump_tree(c, indent + "  +-- ")
+#             else:
+# 		    	dump_tree(c, indent + "  |-- ")
+#     else:
+#         print indent, mio
+
+# ===================================
+# Imprimir AST
+# ===================================
+
+
 if __name__ == "__main__":
     if (len(sys.argv) < 2 or len(sys.argv) > 4):
         print "Usage: python %s [-ast] [-lex] <pascal_file>" % sys.argv[0]
@@ -371,6 +448,7 @@ if __name__ == "__main__":
             data = file.read()
             parser = make_parser()
             result = parser.parse(data)
+            # dump_tree(result)
             print result
         except IOError:
             print "Error: The file does not exist"
@@ -416,7 +494,7 @@ declaration_local: var_decl
 statementBlock : statementBlock ';' statement
           | statement
 
-statement: WHILE relationop DO statement
+statement: WHILE relation DO statement
          |  IF relation THEN statement // ifthen
          |  IF relation THEN statement %prec ELSE statement // ifthenelse
          |  assigment
@@ -430,10 +508,10 @@ statement: WHILE relationop DO statement
 functionCall: ID LPAREN arglist RPAREN
 
 ->
-relationop: relationop OR relationop
-          | relationop AND relationop
-          | NOT relationop
-          | LPAREN relationop RPAREN
+relation: relation OR relation
+          | relation AND relation
+          | NOT relation
+          | LPAREN relation RPAREN
           | relation
 
 relation: expression LT expression
