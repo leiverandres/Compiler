@@ -102,13 +102,6 @@ def find_colum(input, token):
     column = (token.lexpos - last_cr) + 1
     return column
 
-# def t_eof(t):
-#     more = raw_input('... ')
-#     if more:
-#         self.lexer.input(more)
-#         return self.lexer.token()
-#     return None
-
 def t_error(t):
     print("Illegal character %s line: %d col: %d" % (repr(t.value[0]), t.lineno, find_colum(lexer.lexdata, t)))
     t.lexer.skip(1)

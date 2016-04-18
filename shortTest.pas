@@ -1,4 +1,4 @@
-fun main()
+fun main(i:int, j:int)
   v:int[8192];
   i:int;
   n:int;
