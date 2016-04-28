@@ -1,4 +1,5 @@
 import ply.lex as lex
+from errors import error
 import re
 
 reserved = {
@@ -93,17 +94,17 @@ t_ignore = ' \t'
 def t_COMMENT(t):
     r'\/\*(.|\n)*\*\/'
     t.lexer.lineno += t.value.count('\n') # just take lines
-    pass
 
 def find_colum(input, token):
-    last_cr = input.rfind('\n', 0, token.lexpos) # pos last \n before token we wante to find
+    last_cr = input.rfind('\n', 0, token.lexpos) # pos last \n before token we want to find
     if last_cr < 0:
         last_ct = 0
     column = (token.lexpos - last_cr) + 1
     return column
 
 def t_error(t):
-    print("Illegal character %s line: %d col: %d" % (repr(t.value[0]), t.lineno, find_colum(lexer.lexdata, t)))
+    error(t.lineno, "Illegal character %s" % (repr(t.value[0])))
+    # print("Illegal character %s line: %d col: %d" % (repr(t.value[0]), t.lineno, find_colum(lexer.lexdata, t)))
     t.lexer.skip(1)
 
 def make_lexer():
@@ -111,11 +112,15 @@ def make_lexer():
     return lexer
 
 def run_lexer(data):
+    import sys
+    from errors import subscribe_errors
     lexer = make_lexer()
-    lexer.input(data)
-    for tok in iter(lexer.token, None):
-        if tok:
-            print(tok)
+    with subscribe_errors(lambda msg: sys.stderr.write(msg+"\n")):
+        lexer.input(data)
+        for tok in iter(lexer.token, None):
+            if tok:
+                print(tok)
+
 
 if __name__ == '__main__':
     import sys
