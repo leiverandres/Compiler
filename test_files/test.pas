@@ -1,9 +1,14 @@
-fun quicksort(l:int, r:int, a:int[8192])
+fun (l:int, r:int, a:int[8192])
   i:int;
   j:int;
   x:int;
   w:int;
   tmp:int;
+  fun prueba()
+      begin
+        if 1 >= 1 then
+          skip
+    end;
   done:int;
 begin
   i := l;

@@ -15,7 +15,7 @@ Options:
 
 if __name__ == "__main__":
     import sys
-    from errors import subscribe_errors
+    from errors import subscribe_errors, errors_reported
 
     if (len(sys.argv) < 2 or len(sys.argv) > 3):
         show_usage(sys.argv[0])
@@ -27,14 +27,19 @@ if __name__ == "__main__":
 
             if ("-lex" in sys.argv):
                 paslex.run_lexer(data)
-            elif ("-ast" in sys.argv):
-                parser = pasparser.make_parser()
-                result = parser.parse(data)
-                if result:
-                    dump_class_tree(result)
             else:
                 parser = pasparser.make_parser()
-                result = parser.parse(data)
+                try:
+                    with subscribe_errors(lambda msg: sys.stdout.write(msg+"\n")):
+                        result = parser.parse(data)
+                    # print("hi")
+                    errors = errors_reported();
+                    if errors == 0:
+                        if ("-ast" in sys.argv):
+                            dump_class_tree(result)
+                except parseError as e:
+                    # sys.stderr.write("Number of errors: %d" errors)
+                    print e
 
         except IOError:
             sys.stderr.write("Error: The file does not exist")
@@ -42,8 +47,3 @@ if __name__ == "__main__":
     else:
         print "Please put the name of your pascal file at the end of the command"
         raise SystemExit(1)
-
-# with subscribe_errors(lambda msg: sys.stderr.write(msg+"\n")):
-# 		lexer.input(open(sys.argv[1]).read())
-# 		for tok in iter(lexer.token, None):
-# 			sys.stdout.write("%s\n" % tok)

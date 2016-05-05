@@ -72,9 +72,9 @@ def dump_class_tree(node, indent = ""):
             else:
              c = mio[i]
             if i == len(mio)-1:
-		    	dump_class_tree(c, indent + "  +-- ")
+		    	dump_class_tree(c, indent + " +-- ")
             else:
-		    	dump_class_tree(c, indent + "  |-- ")
+		    	dump_class_tree(c, indent + " |-- ")
     else:
         print indent, mio
 # ===================================
@@ -104,7 +104,7 @@ class AST(object):
 	_fields = []
 	def __init__(self,*args,**kwargs):
 		assert len(args) == len(self._fields)
-        
+
 		for name,value in zip(self._fields,args):
 			setattr(self,name,value)
 		# Asigna argumentos adicionales (keywords) si se suministran
@@ -221,18 +221,12 @@ class RelationalOp(AST):
 	_fields = ['op', 'left', 'right']
 
 class Break(AST):
-    _fields = ['value']
+    _fields = []
 
 class Skip(AST):
-    _fields = ['Value']
+    _fields = []
 
-class True(AST):
-    _fields = ['value']
-
-class False(AST):
-    _fields = ['Value']
-
-class Id(AST):
+class LocationId(AST):
     _fields = ['name']
 
 class Literal(AST):
@@ -255,6 +249,9 @@ class ExprList(AST):
 
 	def append(self, e):
 		self.expressions.append(e)
+
+class Return(AST):
+    _fields = ['value']
 
 class Empty(AST):
 	_fields = []
