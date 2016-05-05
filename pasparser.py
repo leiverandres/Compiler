@@ -165,7 +165,8 @@ def p_error_var_decl(p):
     '''
     p[0] = Node("Error")
     p[0].lineno = p.lineno(1)
-    sys.stderr.write(red+"Error line %d: bad Assigment. ':' missing\n" % (p.lineno(1)))
+    error(p.lineno(1), red+"Error: bad Assigment. ':' missing")
+    # sys.stderr.write(red+"Error line %d: bad Assigment. ':' missing\n" % (p.lineno(1)))
 
 def p_type_specifier1(p):
     "type_specifier : simple_type"
@@ -199,7 +200,8 @@ def p_error_comma_stm(p):
     p[0] = Node("Error")
     p[1].append(p[2])
     p[0] = p[1]
-    sys.stderr.write(red+"Error line %d: ';' expected before statement\n" % (p[2].lineno))
+    error(p[2].lineno, red+"Error: ';' expected before statement")
+    # sys.stderr.write(red+"Error line %d: ';' expected before statement\n" % (p[2].lineno))
 
 def p_statement_while(p):
     "statement : WHILE relation DO statement"
@@ -263,14 +265,16 @@ def p_error_ifthen(p):
     "ifthen : IF relation statement"
     p[0] = Node("Error")
     p[0].lineno = p.lineno(1)
-    sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
+    error(p[2].lineno, red+"Error: 'Then' missing before statement")
+    # sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
 
 #F00 shift reduce
 def p_error_ifthen2(p):
     "ifthenelse : IF relation statement ELSE statement"
     p[0] = Node("Error")
     p[0].lineno = p.lineno(1)
-    sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
+    error(p[2].lineno, red+"Error: 'Then' missing before statement")
+    # sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
 
 def p_functionCall(p):
     "functionCall : ID '(' paramslistop ')' %prec UMINUS"
@@ -425,8 +429,8 @@ def p_empty(p):
 def p_error(p):
     if p:
         # error(p.lineno, red+"Syntax error before:  %s -> %s\n" % (p.type , p.value ))
-        raise parseError("Syntax error before:  %s -> %s\n" % (p.type , p.value ))
-        
+        raise parseError()
+
 
 def make_parser():
     lexer = paslex.make_lexer()
@@ -434,10 +438,11 @@ def make_parser():
     return parser
 
 class parseError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-            return repr(self.value)
+    # def __init__(self, value):
+    #     self.value = value
+    # def __str__(self):
+    #         return repr(self.value)
+    pass
 
 if __name__ == "__main__":
     if (len(sys.argv) != 2):

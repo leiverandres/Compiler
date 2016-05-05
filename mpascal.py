@@ -32,14 +32,14 @@ if __name__ == "__main__":
                 try:
                     with subscribe_errors(lambda msg: sys.stdout.write(msg+"\n")):
                         result = parser.parse(data)
-                    # print("hi")
                     errors = errors_reported();
                     if errors == 0:
                         if ("-ast" in sys.argv):
                             dump_class_tree(result)
+                    else:
+                        sys.stderr.write("Number of errors: %d" % errors)
                 except parseError as e:
-                    # sys.stderr.write("Number of errors: %d" errors)
-                    print e
+                    sys.stderr.write("Program couldn't be compiled\n")
 
         except IOError:
             sys.stderr.write("Error: The file does not exist")

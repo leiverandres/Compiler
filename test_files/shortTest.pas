@@ -18,7 +18,10 @@ begin
       write(v[i]); print(" ");
       if 0 < v[i] - v[i+1] then
         begin
-          print("Quicksort falló "); write(i); print("\n") ; return(0)
+          print("Quicksort falló ");
+          write(i);
+          print("\n") ;
+          return(0)
         end
       else
         i:=i+1
