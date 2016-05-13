@@ -1,4 +1,4 @@
-fun (l:int, r:int, a:int[8192])
+fun quicksort(l:int, r:int, a:int[8192])
   i:int;
   j:int;
   x:int;

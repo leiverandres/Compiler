@@ -24,9 +24,9 @@ class Node:
 #
 # -----------------------------------------------
 
-# ===================================
-# Imprimir AST
-# ===================================
+# ================================================================
+# Print AST, dump_trees print a console representation of AST
+# ================================================================
 
 def dump_tree(n, indent = ""):
     if not hasattr(n, "datatype"):
@@ -78,7 +78,8 @@ def dump_class_tree(node, indent = ""):
     else:
         print indent, mio
 # ===================================
-# Imprimir AST
+# Print AST
+# ===================================
 
 '''
 Objetos Arbol de Sintaxis Abstracto (AST - Abstract Syntax Tree).
@@ -173,7 +174,7 @@ class Statements(AST):
 		self.statements.append(e)
 
 class VarDeclaration(AST):
-	_fields = ['id', 'type'] ## type may be simple(int/float) or vector
+	_fields = ['id', 'type']
 
 class Type(AST):
     _fields = ['name']

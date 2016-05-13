@@ -174,17 +174,15 @@ def p_type_specifier1(p):
 
 def p_type_specifier2(p):
     "type_specifier : simple_type '[' INTEGER ']'"
-    p[0] = Vector(p[1], p[3], lineno=p[1].lineno)
+    p[0] = Vector(p[1], p[3], lineno=p[1].lineno, size=p[3])
 
 def p_type_int(p):
     "simple_type : INT"
-    p[0] = Type("Integer", lineno=p.lineno(1))
+    p[0] = Type("int", lineno=p.lineno(1))
 
 def p_type_float(p):
     "simple_type : FLOAT"
-    # p[0] = Node("FLOAT", leaf=p[1])
-    p[0] = Type("Float", lineno=p.lineno(1))
-    # p[0].lineno = p.lineno(1)
+    p[0] = Type("float", lineno=p.lineno(1))
 
 def p_statementBlock(p):
     "statementBlock : statementBlock ';' statement"
@@ -415,11 +413,11 @@ def p_casting_float(p):
 
 def p_number_int(p):
     "number : INTEGER"
-    p[0] = Literal(p[1], lineno=p.lineno(1), datatype='INT', _leaf=True)
+    p[0] = Literal(p[1], lineno=p.lineno(1), typename='int', _leaf=True)
 
 def p_number_float(p):
     "number : FLOATNUM"
-    p[0] = Literal(p[1], lineno=p.lineno(1), datatype='FLOAT', _leaf=True)
+    p[0] = Literal(p[1], lineno=p.lineno(1), typename='float', _leaf=True)
     #singleton
 
 def p_empty(p):
