@@ -40,36 +40,37 @@ def p_funList_function(p):
     p[0] = FunList([p[1]], lineno=p.lineno(1))
 
 def p_function(p):
-    "function : FUN ID '(' arglist ')' localslist BEGIN statementBlock END"
-    p[0] = Function(p[2], p[4], p[6], p[8], lineno=p.lineno(2))
+    "function : FUN ID '(' arglist ')' localslist beginEndBlock"
+    p[0] = Function(p[2], p[4], p[6], p[7], lineno=p.lineno(2), type_argms=[])
 
 def p_error_function0(p):
-    '''
-    function : FUN ID '(' error ')' localslist BEGIN statementBlock END
-    '''
+    "function : FUN ID '(' error ')' localslist beginEndBlock"
     error(p.lineno(2), "Error: something wrong with function parameters")
 
 def p_error_function1(p):
-    "function : FUN error '(' arglist ')' localslist BEGIN statementBlock END"
+    "function : FUN error '(' arglist ')' localslist beginEndBlock"
     error(p.lineno(1), red+"Error: Function indentifier missing\n");
 
 def p_error_function2(p):
-    "function : FUN ID '(' arglist ')' localslist BEGIN statementBlock ';' END"
-    p[0] = Node("Error")
-    p[0].lineno = p.lineno(9)
-    error(p.lineno(9), red+"Warning: bad ';' after last statement of BEGIN-END block\n")
+    "function : FUN ID '(' arglist ')' error beginEndBlock"
+    error(p.lineno(2), "Error: something wrong with function locals")
 
-def p_error_function3(p):
-    "function : FUN ID '(' arglist ')' localslist error statementBlock END"
-    error(p.lineno(7), red+"Error: BEGIN word missing\n")
+def p_beginEndBlock(p):
+    "beginEndBlock : BEGIN statementBlock END"
+    p[0] = p[2]
 
-def p_error_function4(p):
-    "function : FUN ID '(' arglist ')' localslist BEGIN statementBlock error"
-    error(p.lineno(9), red+"Error: END word missing\n")
+def p_error_block1(p):
+    "beginEndBlock : BEGIN statementBlock ';' END"
+    p[0] = p[2]
+    error(p.lineno(3), red+"Warning: bad ';' after last statement of BEGIN-END block\n")
 
-def p_error_function5(p):
-    "function : FUN ID '(' arglist ')' localslist BEGIN error END"
-    error(p.lineno(8), red+"Error: something wrong in BEGIN-END statement block\n")
+def p_error_block2(p):
+    "beginEndBlock : BEGIN END"
+    error(p.lineno(1), red+"Error: empty Begin-End block")
+
+def p_beginEndBlock(p):
+    "beginEndBlock : BEGIN error END"
+    error(p.lineno(1), "Error: something wrong with function statements")
 
 def p_arglist(p):
     "arglist : args"
@@ -145,8 +146,8 @@ def p_error_locals2(p):
 def p_error_locals3(p):
     "locals : function"
     p[0] = Node("Error")
-    p[0].lineno = p[2].lineno
-    error(p[2].lineno, red+"Error1: ';' missing after local function")
+    p[0].lineno = p[1].lineno
+    error(p[1].lineno, red+"Error: ';' missing after local function")
 
 def p_error_locals4(p):
     "var_or_fun : function error"
@@ -242,22 +243,17 @@ def p_statement_break(p):
     p[0] = Break(lineno=p.lineno(1))
 
 def p_statement_block(p):
-    "statement : BEGIN statementBlock END"
-    p[0] = p[2]
-
-def p_error_block(p):
-    "statement : BEGIN END"
-    p[0] = Node("Error")
-    p[0].lineno = p.lineno(1)
-    error(p.lineno(1), red+"Error: empty Begin-End block")
+    "statement : beginEndBlock"
+    p[0] = p[1]
 
 def p_ifthen(p):
     "ifthen : IF relation THEN statement %prec ELSE"
-    p[0] = IfThenStatement(p[2], p[4])
+    p[0] = IfStatement(p[2], p[4], None, lineno=p.lineno(1))
 
 def p_ifthenelse(p):
     "ifthenelse : IF relation THEN statement ELSE statement"
-    p[0] = IfThenElseStatement(p[2], p[4], p[6])
+    # p[0] = IfThenElseStatement(p[2], p[4], p[6], lineno=p.lineno(1))
+    p[0] = IfStatement(p[2], p[4], p[6], lineno=p.lineno(1))
 
 def p_error_ifthen(p):
     "ifthen : IF relation statement"
@@ -276,7 +272,7 @@ def p_error_ifthen2(p):
 
 def p_functionCall(p):
     "functionCall : ID '(' paramslistop ')' %prec UMINUS"
-    p[0] = FunCall(p[1], p[3], lineno=p.lineno(1))
+    p[0] = FunCall(p[1], p[3], lineno=p.lineno(1), datatype=None)
 
 def p_paramsListOp1(p):
     "paramslistop : paramList"
@@ -313,7 +309,7 @@ def p_location1(p):
 
 def p_location2(p):
     "location : ID '[' expression ']'"
-    p[0] = LocationVector(p[1], p[3], lineno=p.lineno(1))
+    p[0] = LocationVectorAsign(p[1], p[3], lineno=p.lineno(1))
 
 def p_relationop1(p):
     "relation : relation OR relation"
@@ -392,8 +388,8 @@ def p_expr_num(p):
     p[0] = p[1]
 
 def p_expr_ubication(p):
-    "expression : ID '[' expression ']'" # Is a leaf??
-    p[0] = LocationVector(p[1], p[3], lineno=p.lineno(1), _leaf=True)
+    "expression : ID '[' expression ']'"
+    p[0] = LocationVector(p[1], p[3], lineno=p.lineno(1))
 
 def p_expr_casting(p):
     "expression : casting"
@@ -426,8 +422,9 @@ def p_empty(p):
 
 def p_error(p):
     if p:
+        pass
         # error(p.lineno, red+"Syntax error before:  %s -> %s\n" % (p.type , p.value ))
-        raise parseError()
+        # raise parseError()
 
 
 def make_parser():
