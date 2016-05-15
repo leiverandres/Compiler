@@ -185,10 +185,7 @@ class Vector(AST):
 class WhileStatement(AST):
 	_fields = ['condition', 'body']
 
-class IfThenStatement(AST):
-	_fields = ['condition', 'then_b']
-
-class IfThenElseStatement(AST):
+class IfStatement(AST):
     _fields = ['condition', 'then_b', 'else_b']
 
 class AssignmentStatement(AST):
@@ -206,14 +203,14 @@ class Write(AST):
 class Read(AST):
     _fields = ['location']
 
-class Location(AST):
-    _fields = ['id']
+class LocationVectorAsign(AST):
+    _fields = ['id', 'index']
 
 class LocationVector(AST):
     _fields = ['id', 'index']
 
 class UnaryOp(AST):
-	_fields = ['op', 'left']
+	_fields = ['op', 'right']
 
 class BinaryOp(AST):
 	_fields = ['op', 'left', 'right']
@@ -228,7 +225,7 @@ class Skip(AST):
     _fields = []
 
 class LocationId(AST):
-    _fields = ['name']
+    _fields = ['id']
 
 class Literal(AST):
 	'''
@@ -238,9 +235,6 @@ class Literal(AST):
 
 class Casting(AST):
     _fields = ['type', 'expr']
-
-class Group(AST): #??
-	_fields = ['expression']
 
 class FunCall(AST):
 	_fields = ['id', 'params']
@@ -257,11 +251,6 @@ class Return(AST):
 class Empty(AST):
 	_fields = []
 
-
-# Usted deberá añadir mas nodos aquí.  Algunos nodos sugeridos son
-# BinaryOperator, UnaryOperator, ConstDeclaration, VarDeclaration,
-# AssignmentStatement, etc...
-
 # ----------------------------------------------------------------------
 #                  NO MODIFIQUE NADA AQUI ABAJO
 # ----------------------------------------------------------------------
@@ -269,7 +258,6 @@ class Empty(AST):
 # Las clase siguientes para visitar y reescribir el AST son tomadas
 # desde el módulo ast de python .
 
-# NO MODIFIQUE
 class NodeVisitor(object):
 	'''
 	Clase para visitar nodos del árbol de sintaxis.  Se modeló a partir

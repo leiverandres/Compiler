@@ -68,7 +68,7 @@ def p_error_block2(p):
     "beginEndBlock : BEGIN END"
     error(p.lineno(1), red+"Error: empty Begin-End block")
 
-def p_beginEndBlock(p):
+def p_error_beginEndBlock2(p):
     "beginEndBlock : BEGIN error END"
     error(p.lineno(1), "Error: something wrong with function statements")
 
@@ -200,7 +200,6 @@ def p_error_comma_stm(p):
     p[1].append(p[2])
     p[0] = p[1]
     error(p[2].lineno, red+"Error: ';' expected before statement")
-    # sys.stderr.write(red+"Error line %d: ';' expected before statement\n" % (p[2].lineno))
 
 def p_statement_while(p):
     "statement : WHILE relation DO statement"
@@ -223,12 +222,17 @@ def p_statement_inOutExpr(p):
     p[0] = p[1]
 
 def p_statement_return(p):
-    "statement : RETURN expression"
-    p[0] = Return(p[2], lineno=p.lineno(1))
+    "statement : RETURN '(' expression ')'"
+    p[0] = Return(p[3], lineno=p.lineno(1))
 
 def p_statement_return2(p):
-    "statement : RETURN empty"
+    "statement : RETURN '(' empty ')'"
+    p[0] = Return(p[3], lineno=p.lineno(1))
+
+def p_error_return1(p):
+    'statement : RETURN error'
     p[0] = Return(p[2], lineno=p.lineno(1))
+    error(p.lineno(1), "Warning: return expression should be between parenthesis")
 
 def p_statement_call(p):
     "statement : functionCall"
@@ -252,23 +256,17 @@ def p_ifthen(p):
 
 def p_ifthenelse(p):
     "ifthenelse : IF relation THEN statement ELSE statement"
-    # p[0] = IfThenElseStatement(p[2], p[4], p[6], lineno=p.lineno(1))
     p[0] = IfStatement(p[2], p[4], p[6], lineno=p.lineno(1))
 
 def p_error_ifthen(p):
     "ifthen : IF relation statement"
-    p[0] = Node("Error")
-    p[0].lineno = p.lineno(1)
-    error(p[2].lineno, red+"Error: 'Then' missing before statement")
-    # sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
+    p[0] = IfStatement(p[2], p[3], None, lineno=p.lineno(1))
+    error(p[2].lineno, red+"Warning: 'Then' missing before statement")
 
-#F00 shift reduce
 def p_error_ifthen2(p):
-    "ifthenelse : IF relation statement ELSE statement"
-    p[0] = Node("Error")
-    p[0].lineno = p.lineno(1)
-    error(p[2].lineno, red+"Error: 'Then' missing before statement")
-    # sys.stderr.write("Error line %d: 'Then' missing before statement\n" % p[2].lineno)
+    "ifthenelse : IF relation error statement ELSE statement"
+    p[0] = IfStatement(p[2], p[4], p[6], lineno=p.lineno(1))
+    error(p[2].lineno, red+"Warning: 'Then' missing before statement")
 
 def p_functionCall(p):
     "functionCall : ID '(' paramslistop ')' %prec UMINUS"
@@ -422,7 +420,7 @@ def p_empty(p):
 
 def p_error(p):
     if p:
-        pass
+        print " i'm in error rule with", p.type
         # error(p.lineno, red+"Syntax error before:  %s -> %s\n" % (p.type , p.value ))
         # raise parseError()
 

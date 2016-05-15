@@ -51,12 +51,12 @@ class MpasType(object):
 
 int_type = MpasType("int",
     set(('+', '-', '*', '/',
-         'LE', 'LT', 'EQUAL', 'NE', 'GT', 'GE')),
+         '<=', '<', '==', '!=', '>', '>=')),
     set(('+', '-')),
     )
 float_type = MpasType("float",
     set(('+', '-', '*', '/',
-         'LE', 'LT', 'EQUAL', 'NE', 'GT', 'GE')),
+         '<=', '<', '==', '!=', '>', '>=')),
     set(('+', '-')),
     )
 string_type = MpasType("string",
@@ -64,8 +64,8 @@ string_type = MpasType("string",
     set(),
     )
 boolean_type = MpasType("bool",
-    set(('AND', 'OR', 'EQUAL', 'NE')),
-    set(('NOT',))
+    set(('and', 'or', '==', '!=')),
+    set(('not',))
     )
 
 # En el código de verificación, deberá hacer referencia a los

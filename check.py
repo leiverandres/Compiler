@@ -105,23 +105,23 @@ class MpasType(object):
 		self.un_ops = un_ops
 
 int_type = MpasType("int",
-	set(('+', '-', '*', '/',
-	     'LE', 'LT', 'EQUAL', 'NE', 'GT', 'GE')),
-	set(('+', '-')),
-	)
+    set(('+', '-', '*', '/',
+         '<=', '<', '==', '!=', '>', '>=')),
+    set(('+', '-')),
+    )
 float_type = MpasType("float",
-	set(('+', '-', '*', '/',
-	     'LE', 'LT', 'EQUAL', 'NE', 'GT', 'GE')),
-	set(('+', '-')),
-	)
+    set(('+', '-', '*', '/',
+         '<=', '<', '==', '!=', '>', '>=')),
+    set(('+', '-')),
+    )
 string_type = MpasType("string",
-	set(('+',)),
-	set(),
-	)
+    set(('+',)),
+    set(),
+    )
 boolean_type = MpasType("bool",
-	set(('AND', 'OR', 'EQUAL', 'NE')),
-	set(('NOT',))
-	)
+    set(('and', 'or', '==', '!=')),
+    set(('not',))
+    )
 
 class SymbolTable(object):
     '''
@@ -176,6 +176,14 @@ class SymbolTable(object):
             else:
                 return None
 
+    #just for function tables
+    def update_datatype(self, a, value):
+        if self.symtab.has_key(a):
+            self.symtab[a]['datatype'] = value
+        else:
+            if self.parent != None:
+                self.parent.update_datatype(a, value)
+
 class CheckProgramVisitor(NodeVisitor):
     '''
     Clase de Revisión de programa.  Esta clase usa el patrón cisitor como está
@@ -195,6 +203,7 @@ class CheckProgramVisitor(NodeVisitor):
         self.local_symtab = None
         self.current_function = None
         self.has_return = False
+        self.in_while = False
         # Agrega nombre de tipos incorporados ((int, float, string) a la tabla de simbolos
         self.symtab_add('int', int_type)
         self.symtab_add('float', float_type)
@@ -215,14 +224,32 @@ class CheckProgramVisitor(NodeVisitor):
             result = self.global_symtab.lookup(name)
         return result
 
-    # ¿¿??
+    def update_datatype(self, name, new_value):
+        if self.local_symtab:
+            self.local_symtab.update_datatype(name, new_value)
+        else:
+            self.global_symtab.update_datatype(name, new_value)
+
     def push_symtab(self, node):
         self.local_symtab = SymbolTable(self.local_symtab)
         node.symtab = self.local_symtab
 
     def pop_symbol(self):
         self.local_symtab = self.local_symtab.parent
-    # ¿¿??
+
+    def find_fun_type(self, function):
+        queue = []
+        for item in function.statements.statements:
+            queue.append(item)
+        while queue:
+            cur = queue.pop(0)
+            if isinstance(cur, pasAST.Return):
+                self.visit(cur.value)
+                return cur.value.datatype
+            for i in xrange(0, len(cur._fields)):
+                att = getattr(cur, cur._fields[i])
+                if isinstance(att, pasAST.AST):
+                    queue.append(att)
 
     def visit_Program(self, node):
         self.local_symtab = self.global_symtab
@@ -231,32 +258,56 @@ class CheckProgramVisitor(NodeVisitor):
         # 1. Visita todas las funciones
         # 2. Registra la tabla de simbolos asociada
         self.visit(node.funList)
+        if not self.symtab_lookup('main'):
+            error(0, "main function missing")
+        # print "\nGlobal", self.global_symtab.symtab
 
     def visit_Function(self, node):
+        # Asegurarse que tenga return
+        self.has_return = False
         if self.symtab_lookup(node.id):
             error(node.lineno, "Function %s already defined" % node.id)
-            self.visit(node.arglist)
         else:
-            v = {'lineno' : node.lineno}
+            v = {
+                'datatype': None,
+                'lineno' : node.lineno,
+                'cant_argms' : len(node.arglist.arguments),
+                'type_argms' : [],
+                'fun_instance' : node
+            }
             self.symtab_add(node.id, v)
             self.push_symtab(node)
+
             self.current_function = node
 
             if self.current_function.id == 'main':
                 if not isinstance(node.arglist.arguments[0], pasAST.Empty):
                     error(node.lineno, "Function 'main' should not have arguments")
+                else:
+                    self.local_symtab.parent.symtab[node.id]['cant_argms'] = 0
             else:
-                self.visit(node.arglist)
+                node.type_argms = self.visit(node.arglist)
+            self.local_symtab.parent.symtab[node.id]['type_argms'] = node.type_argms
 
             self.visit(node.localslist)
-            print node.statements.statements, '\n\n'
-            # self.visit(node.statements)
-            # node.datatype = self.symtab_lookup(node.typename)
+            self.visit(node.statements)
+
+            if not self.has_return:
+                error(node.lineno, "Return was not found. Function mush have return.")
+
+            node.symtab = self.local_symtab.symtab
+
             self.pop_symbol()
+            self.local_symtab.symtab[node.id]['table'] = node.symtab
+            # print self.local_symtab.symtab, '\n'
 
     def visit_ArgList(self, node):
+        type_argms = []
+        # print "Arguments", node.arguments
         for arg in node.arguments:
             self.visit(arg)
+            type_argms.append(arg.datatype)
+        return type_argms
 
     def visit_LocalsList(self, node):
         for local in node.locals:
@@ -274,13 +325,15 @@ class CheckProgramVisitor(NodeVisitor):
     def visit_VarDeclaration(self,node):
         # 1. Revise que el nombre de la variable no se ha definido
         if self.symtab_lookup(node.id):
+            self.visit(node.type)
+            node.datatype = node.type.datatype
             error(node.lineno, "Variable %s already defined" % node.id)
         # 2. Agrege la entrada a la tabla de símbolos
         else:
             current = self.local_symtab.symtab
             self.symtab_add(node.id, {'datatype': None})
             self.visit(node.type)
-            if isinstance(node.type, Type): # Type class fron AST
+            if isinstance(node.type, Type):
                 #simple type
                 current[node.id]['varClass'] = 'simple_var'
             else:
@@ -302,31 +355,32 @@ class CheckProgramVisitor(NodeVisitor):
         node.datatype = node.type.datatype
 
     def visit_WhileStatement(self, node):
+        self.in_while = True
         self.visit(node.condition)
-        if not node.condition.type == types.boolean_type:
-            error(node.lineno, "Tipo incorrecto para condición while")
+        if not node.condition.datatype == boolean_type:
+            error(node.lineno, "Wrong Type for While condition")
         else:
             self.visit(node.body)
-
-    def visit_Literal(self, node):
-        pass
-
-    def visit_IfStatement(self, node):
-        self.visit(node.condition)
-        if not node.condition.type == types.boolean_type:
-            error(node.lineno, "Tipo incorrecto para condición if")
-        else:
-            self.visit(node.then_b)
-            if node.else_b:
-                self.visit(node.else_b)
+        self.in_while = False
 
     def visit_UnaryOp(self, node):
         # 1. Asegúrese que la operación es compatible con el tipo
         # 2. Ajuste el tipo resultante al mismo del operando
-        self.visit(node.left)
-        if not paslex.operators[node.op] in node.left.type.un_ops:
+        self.visit(node.right)
+        if not node.op in node.right.datatype.un_ops:
             error(node.lineno, "Operación no soportada con este tipo")
-            self.type = node.left.type
+        node.datatype = node.right.datatype
+
+    def visit_RelationalOp(self, node):
+        self.visit(node.left)
+        self.visit(node.right)
+        if not node.left.datatype == node.right.datatype:
+            error(node.lineno, "Operandos de relación no son del mismo tipo")
+        elif not node.op in node.left.datatype.bin_ops:
+            error(node.lineno, "Operación no soportada con este tipo")
+        elif not node.op in node.right.datatype.bin_ops:
+            error(node.lineno, "Operación no soportada con este tipo")
+        node.datatype = self.symtab_lookup('bool')
 
     def visit_BinaryOp(self, node):
         # 1. Asegúrese que los operandos left y right tienen el mismo tipo
@@ -334,97 +388,161 @@ class CheckProgramVisitor(NodeVisitor):
         # 3. Asigne el tipo resultante
         self.visit(node.left)
         self.visit(node.right)
-        node.type = node.left.type
+        if not node.left.datatype == node.right.datatype:
+            error(node.lineno, "Operandos de operacionn no son del mismo tipo")
+        elif not node.op in node.left.datatype.bin_ops:
+            error(node.lineno, "Operación no soportada con este tipo")
+        elif not node.op in node.right.datatype.bin_ops:
+            error(node.lineno, "Operación no soportada con este tipo")
+        node.datatype = node.left.datatype
+
+    def visit_IfStatement(self, node):
+        self.visit(node.condition)
+        if not node.condition.datatype == boolean_type:
+            error(node.lineno, "Tipo incorrecto para condición if")
+        else:
+            self.visit(node.then_b)
+            if node.else_b:
+                self.visit(node.else_b)
 
     def visit_AssignmentStatement(self,node):
         # 1. Asegúrese que la localización de la asignación está definida
-        sym = self.symtab.lookup(node.location)
-        assert sym, "Asignado a un sym desconocido"
-        # 2. Revise que la asignación es permitida, pe. sym no es una constante
-        # 3. Revise que los tipos coincidan.
-        self.visit(node.value)
-        assert sym.type == node.value.type, "Tipos no coinciden en asignación"
-
-    def visit_ConstDeclaration(self,node):
-        # 1. Revise que el nombre de la constante no se ha definido
-        if self.symtab.lookup(node.id):
-            error(node.lineno, "Símbol %s ya definido" % node.id)
-            # 2. Agrege una entrada a la tabla de símbolos
+        self.visit(node.location)
+        sym = self.symtab_lookup(node.location.id)
+        if not sym:
+            error(node.lineno, "Asignado a un symbol desconocido")
+        # 2. Revise que los tipos coincidan.
         else:
-            self.symtab.add(node.id, node)
             self.visit(node.value)
-            node.type = node.value.type
+            if node.location.datatype == node.value.datatype:
+                node.datatype = sym['datatype']
+            else:
+                error(node.lineno, "expression cannot be assigned to a %s variable" \
+                      % (sym['datatype'].name))
 
-    def visit_Typename(self,node):
-        # 1. Revisar que el nombre de tipo es válido que es actualmente un tipo
-        pass
-
-    def visit_Location(self,node):
-        # 1. Revisar que la localización es una variable válida o un valor constante
+    def visit_LocationId(self, node):
+        # 1. Revisar que la localización es una variable válida
         # 2. Asigne el tipo de la localización al nodo
-        pass
+        var_values = self.symtab_lookup(node.id)
+        if not var_values:
+            node.datatype = None
+            error(node.lineno, "variable %s is not defined" % node.id)
+        else:
+            node.datatype = var_values['datatype']
 
-    def visit_LoadLocation(self,node):
-        # 1. Revisar que loa localización cargada es válida.
+    def visit_LocationVectorAsign(self, node):
+        # 1. Revisar que la localización cargada es válida.
         # 2. Asignar el tipo apropiado
-        sym = self.symtab.lookup(node.name)
-        assert(sym)
-        node.type = sym.type
+        # 3. index debe ser entero
+        var_values = self.symtab_lookup(node.id)
+        if not var_values:
+            error(node.lineno, "Assigment invalid, variable '%s' is not defined" % node.id)
+        else:
+            node.datatype = var_values['datatype']
+            self.visit(node.index)
+            if isinstance(node.index, Literal) and node.index.datatype == int_type:
+                if not (node.index.value >= 0 and node.index.value <= var_values['size']):
+                    error(node.lineno, "Vector index out of range")
+            else:
+                error(node.lineno, "Index of vector '%s' must be INTEGER" % node.id)
+
+    def visit_LocationVector(self, node):
+        # 1. Revisar que la localización cargada es válida.
+        # 2. Asignar el tipo apropiado
+        var_values = self.symtab_lookup(node.id)
+        if not var_values:
+            error(node.lineno, "Access invalid, variable '%s' is not defined" % node.id)
+        else:
+            self.visit(node.index)
+            node.datatype = var_values['datatype']
+            if not node.index.datatype == int_type:
+                error(node.lineno, "Access invalid, index of vector must be INTEGER")
 
     def visit_Literal(self,node):
         # Adjunte un tipo apropiado a la constante
-        if isinstance(node.value, types.BooleanType):
-            node.type = self.symtab.lookup("bool")
-        elif isinstance(node.value, types.IntType):
-            node.type = self.symtab.lookup("int")
-        elif isinstance(node.value, types.FloatType):
-            node.type = self.symtab.lookup("float")
-        elif isinstance(node.value, types.StringTypes):
-            node.type = self.symtab.lookup("string")
+        if isinstance(node.value, bool):
+            node.datatype = self.symtab_lookup("bool")
+        elif isinstance(node.value, int):
+            node.datatype = self.symtab_lookup("int")
+        elif isinstance(node.value, float):
+            node.datatype = self.symtab_lookup("float")
+        elif isinstance(node.value, basestring):
+            node.datatype = self.symtab_lookup("string")
 
-    def visit_PrintStatement(self, node):
+    def visit_Print(self, node):
+        pass
+
+    def visit_Write(self, node):
         self.visit(node.expr)
 
-    def visit_Extern(self, node):
-        # obtener el tipo retornado
-        # registe el nombre de la función
-        self.visit(node.func_prototype)
-
-    def visit_Parameters(self, node):
-        for p in node.param_decls:
-            self.visit(p)
-
-    def visit_ParamDecl(self, node):
-        node.type = self.symtab.lookup(node.typename)
-
-    def visit_Group(self, node):
-        self.visit(node.expression)
-        node.type = node.expression.type
-
-    def visit_RelationalOp(self, node):
-        self.visit(node.left)
-        self.visit(node.right)
-        if not node.left.type == node.right.type:
-            error(node.lineno, "Operandos de relación no son del mismo tipo")
-        elif not paslex.operators[node.op] in node.left.type.bin_ops:
-            error(node.lineno, "Operación no soportada con este tipo")
-            node.type = self.symtab.lookup('bool')
+    def visit_Read(self, node):
+        self.visit(node.location)
 
     def visit_FunCall(self, node):
-        pass
+        # 1.Revisar que la funcion exista
+        # 2.Comparar cantidad de paramentros y sus tipos
+        # por ahora
+        #si no tiene tipo aun, es por que esta definida despues o es un llamado recursivo
+        #entonces buscamos el tipo en los statements de la instancia
+        sym = self.symtab_lookup(node.id)
+
+        if sym['datatype'] == None:
+            datatype = self.find_fun_type(sym['fun_instance'])
+            self.update_datatype(node.id, datatype)
+        sym = self.symtab_lookup(node.id) #update
+
+        if not sym:
+            error(node.lineno, "Function '%s' is not defined" % node.id)
+        else:
+            if not node.id == 'main':
+                node.datatype = sym['datatype']
+                if sym['cant_argms'] == len(node.params.expressions):
+                    type_params = self.visit(node.params)
+                    type_argms = sym['type_argms']
+
+                    for i in xrange(0, sym['cant_argms']):
+                        if not type_argms[i] == type_params[i]:
+                            error(node.lineno, "Arguments must have same type")
+                            break
+                else:
+                    error(node.lineno, "Function '%s' takes exactly %d arguments %d given" \
+                          % (node.id, sym['cant_argms'], len(node.params.expressions)))
+            else:
+                error(node.lineno, "You can not call main function")
 
     def visit_ExprList(self, node):
-        pass
+        type_params = []
+        for expr in node.expressions:
+            self.visit(expr)
+            type_params.append(expr.datatype)
+        return type_params
+
+    def visit_Casting(self, node):
+        node.datatype = self.symtab_lookup(node.type)
+        self.visit(node.expr)
+
+    def visit_Break(self, node):
+        if not self.in_while:
+            error(node.lineno, "Break statement is not inside a While loop")
 
     def visit_Return(self, node):
-        pass
+        if not isinstance(node.value, pasAST.Empty):
+            self.visit(node.value)
+            cur_fun = self.current_function
+            if self.has_return:
+                # verificar el tipo de todos los return
+                sym = self.symtab_lookup(cur_fun.id)
+                if not node.value.datatype == sym['datatype']:
+                    error(node.lineno, "Conflic with function type and return expressions type")
+            else:
+                self.has_return = True
+                self.local_symtab.parent.symtab[cur_fun.id]['datatype'] = node.value.datatype
+        else:
+            self.has_return = True
+            error(node.lineno, "Return can not be empty")
 
     def visit_Empty(self, node):
-        pass
-
-# ----------------------------------------------------------------------
-#                       NO MODIFICAR NADA DE LO DE ABAJO
-# ----------------------------------------------------------------------
+        node.datatype = None
 
 def check_program(ast_root):
     '''
@@ -446,3 +564,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+'''
+* Que hacer con funciones que todavia no tienen return, y visito
+un llamado recursivo a esa funcion
+'''
