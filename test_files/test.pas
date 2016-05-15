@@ -1,4 +1,4 @@
-fun (l:int, r:int, a:int[8192])
+fun quicksort(l:int, r:int, a:int[8192])
   i:int;
   j:int;
   x:int;
@@ -24,8 +24,8 @@ begin
       if i <= j then
         begin
           tmp := a[i];
-          a[i] := a[j];
-          a[j] := tmp;
+          /*a[i] := a[j];
+          a[j] := tmp; Que hacer con esto */
           i:=i+1;
           j:=j-1
         end;
@@ -60,7 +60,10 @@ begin
       print(" ");
       if 0 < v[i] - v[i+1] then
         begin
-          print("Quicksort falló "); write(i); print("\n") ; return(0)
+          print("Quicksort falló ");
+          write(i);
+          print("\n");
+          return(0)
         end
       else
         i:=i+1
