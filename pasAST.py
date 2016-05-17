@@ -50,11 +50,13 @@ def dump_tree(n, indent = ""):
             dump_tree(c, indent + "|-- ")
 
 def dump_class_tree(node, indent = ""):
-    #print node
     if not hasattr(node, "datatype"):
 		datatype = ""
     else:
-		datatype = node.datatype
+        if node.datatype != None:
+            datatype = node.datatype.name
+        else:
+            datatype = ""
 
     if(node.__class__.__name__ != "str" and node.__class__.__name__ != "list"):
         print "%s%s  %s" % (indent, node.__class__.__name__, datatype)
@@ -365,3 +367,30 @@ def flatten(top):
 	d = Flattener()
 	d.visit(top)
 	return d.nodes
+
+
+
+class DotVisitor(NodeVisitor):
+	'''
+	Print the AST using dot from graphviz
+	'''
+	def __init__(self):
+		self.id = 0
+		self.stack = []
+		self.dot = 'digraph AST {\n\tnode [shape=box]\n'
+
+	def __str__(self):
+		return self.dot + '}'
+
+	def _id(self):
+		self.id += 1
+		return 'node%02d' % self.id
+
+	def generic_visit(self, node):
+		name = self._id()
+		self.dot += '\t' + name + ' [label="' + node.__class__.__name__ + '"]\n'
+		NodeVisitor.generic_visit(self,node)
+		while len(self.stack) != 0:
+			n = self.stack.pop()
+			self.dot += '\t' + name + ' -> ' + n + '\n'
+		self.stack.append(name)

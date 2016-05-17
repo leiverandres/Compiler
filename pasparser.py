@@ -26,8 +26,8 @@ def p_program(p):
     p[0] = Program(p[1])
 
 def p_error_program(p):
-    "program : empty"
-    error(p.lineno(1), green+"Warning: Empty File problem\n")
+    "program : error"
+    error(p.lineno(1), green+"Warning: File problem\n")
 
 def p_fun_list(p):
     "funlist : funlist function"
@@ -87,8 +87,7 @@ def p_error_arglist(p):
 
 def p_args_argument(p):
     "args : var_decl"
-    p[0] = ArgList([p[1]])
-    p[0].lineno = p[1].lineno
+    p[0] = ArgList([p[1]], lineno=p[1].lineno)
 
 def p_args(p):
     "args : args ',' var_decl"
@@ -123,8 +122,7 @@ def p_var_or_fun_decl(p):
 
 def p_locals_var2(p):
     "locals : var_decl ';'"
-    p[0] = LocalsList([p[1]])
-    p[0].lineno = p[1].lineno
+    p[0] = LocalsList([p[1]], lineno=p[1].lineno)
 
 def p_locals_fun2(p):
     "locals : function ';'"
@@ -133,14 +131,12 @@ def p_locals_fun2(p):
 
 def p_error_locals1(p):
     "locals : var_decl"
-    p[0] = Node("Error")
-    p[0].lineno = p[2].lineno
-    error(p[1].lineno, red+"Error1: ';' missing after local declaration")
+    p[0] = LocalsList([p[1]], lineno=p[1].lineno)
+    error(p[1].lineno, red+"Error: ';' missing after local declaration")
 
 def p_error_locals2(p):
     "var_or_fun : var_decl error"
-    p[0] = Node("Error")
-    p[0].lineno = p[1].lineno
+    p[0] = p[1]
     error(p[1].lineno, red+"Error: ';' missing after local declaration")
 
 def p_error_locals3(p):
@@ -151,8 +147,7 @@ def p_error_locals3(p):
 
 def p_error_locals4(p):
     "var_or_fun : function error"
-    p[0] = Node("Error")
-    p[0].lineno = p[1].lineno
+    p[0] = p[1]
     error(p.lineno(2), red+"Error: ';' missing after local function")
 
 def p_var_decl(p):
@@ -164,10 +159,8 @@ def p_error_var_decl(p):
     var_decl : ID type_specifier
              | ID ASIGN type_specifier
     '''
-    p[0] = Node("Error")
-    p[0].lineno = p.lineno(1)
+    p[0] = VarDeclaration(p[1], p[3], lineno=p.lineno(1))
     error(p.lineno(1), red+"Error: bad Assigment. ':' missing")
-    # sys.stderr.write(red+"Error line %d: bad Assigment. ':' missing\n" % (p.lineno(1)))
 
 def p_type_specifier1(p):
     "type_specifier : simple_type"
@@ -196,7 +189,6 @@ def p_statement(p):
 
 def p_error_comma_stm(p):
     "statementBlock : statementBlock statement"
-    p[0] = Node("Error")
     p[1].append(p[2])
     p[0] = p[1]
     error(p[2].lineno, red+"Error: ';' expected before statement")
@@ -231,8 +223,7 @@ def p_statement_return2(p):
 
 def p_error_return1(p):
     'statement : RETURN error'
-    p[0] = Return(p[2], lineno=p.lineno(1))
-    error(p.lineno(1), "Warning: return expression should be between parenthesis")
+    error(p.lineno(1), "Error: return expression should be between parenthesis")
 
 def p_statement_call(p):
     "statement : functionCall"
@@ -412,7 +403,6 @@ def p_number_int(p):
 def p_number_float(p):
     "number : FLOATNUM"
     p[0] = Literal(p[1], lineno=p.lineno(1), typename='float', _leaf=True)
-    #singleton
 
 def p_empty(p):
     "empty : "
@@ -421,7 +411,7 @@ def p_empty(p):
 def p_error(p):
     if p:
         print " i'm in error rule with", p.type
-        # error(p.lineno, red+"Syntax error before:  %s -> %s\n" % (p.type , p.value ))
+        error(p.lineno, red+"Syntax error before:  %s -> %s\n" % (p.type , p.value ))
         # raise parseError()
 
 
