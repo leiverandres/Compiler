@@ -7,7 +7,7 @@ fun quicksort(l:int, r:int, a:int[8192])
   fun prueba()
       begin
         if 1 >= 1 then
-          skip
+          return (0)
     end;
   done:int;
 begin
@@ -35,13 +35,17 @@ begin
   if l<j then
     tmp := quicksort(l, j, a);
   if i<r then
-    tmp := quicksort(i, r, a)
+    tmp := quicksort(i, r, a);
+  return (tmp)
 end
 
 fun main()
   v:int[8192];
   i:int;
   n:int;
+  tmp: int;
+  r: int;
+  a:int[8192];
 begin
   print("Entre n: ");
   read(n);
@@ -49,7 +53,7 @@ begin
   while i<n do
     begin
       tmp := quicksort(i, r, a);
-      read(v[i]);
+      read(v[2]);
       i := i+1
     end;
   quicksort(0, n-1, v);

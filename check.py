@@ -85,11 +85,15 @@ Un caparazón de código se proporciona a continuación.
 '''
 
 import sys, re, string
-# from types import *
 from errors import error
 from pasAST import *
 import paslex
 import pasAST
+
+
+#===============================================================================
+#  Types declaration
+#===============================================================================
 
 class MpasType(object):
 	'''
@@ -122,6 +126,10 @@ boolean_type = MpasType("bool",
     set(('and', 'or', '==', '!=')),
     set(('not',))
     )
+
+#===============================================================================
+#  Types declaration
+#===============================================================================
 
 class SymbolTable(object):
     '''
@@ -158,7 +166,6 @@ class SymbolTable(object):
 
         func foo(x:int, y:int)
         x:float;
-        v is a vector?
         '''
         if self.symtab.has_key(a):
             if type(self.symtab[a]) != type(v):
@@ -186,14 +193,10 @@ class SymbolTable(object):
 
 class CheckProgramVisitor(NodeVisitor):
     '''
-    Clase de Revisión de programa.  Esta clase usa el patrón cisitor como está
+    Clase de Revisión de programa.  Esta clase usa el patrón visitor como está
     descrito en pasAST.py.  Es necesario definir métodos de la forma visit_NodeName()
-    para cada tipo de nodo del AST que se desee procesar.
-
-    Nota: Usted tendrá que ajustar los nombres de los nodos del AST si ha elegido
-    nombres diferentes.
+    para cada tipo de nodo del AST que se desee procesar
     '''
-
 
     def __init__(self):
         '''
@@ -253,14 +256,11 @@ class CheckProgramVisitor(NodeVisitor):
 
     def visit_Program(self, node):
         self.local_symtab = self.global_symtab
-        # self.push_symtab(node)
-        # self.symtab_add()
         # 1. Visita todas las funciones
         # 2. Registra la tabla de simbolos asociada
         self.visit(node.funList)
         if not self.symtab_lookup('main'):
             error(0, "main function missing")
-        # print "\nGlobal", self.global_symtab.symtab
 
     def visit_Function(self, node):
         # Asegurarse que tenga return
@@ -293,17 +293,15 @@ class CheckProgramVisitor(NodeVisitor):
             self.visit(node.statements)
 
             if not self.has_return:
-                error(node.lineno, "Return was not found. Function mush have return.")
+                error(node.lineno, "Return was not found. Function must have return.")
 
             node.symtab = self.local_symtab.symtab
 
             self.pop_symbol()
             self.local_symtab.symtab[node.id]['table'] = node.symtab
-            # print self.local_symtab.symtab, '\n'
 
     def visit_ArgList(self, node):
         type_argms = []
-        # print "Arguments", node.arguments
         for arg in node.arguments:
             self.visit(arg)
             type_argms.append(arg.datatype)
@@ -327,7 +325,7 @@ class CheckProgramVisitor(NodeVisitor):
         if self.symtab_lookup(node.id):
             self.visit(node.type)
             node.datatype = node.type.datatype
-            error(node.lineno, "Variable %s already defined" % node.id)
+            error(node.lineno, "Variable '%s' already defined" % node.id)
         # 2. Agrege la entrada a la tabla de símbolos
         else:
             current = self.local_symtab.symtab
@@ -426,7 +424,7 @@ class CheckProgramVisitor(NodeVisitor):
         var_values = self.symtab_lookup(node.id)
         if not var_values:
             node.datatype = None
-            error(node.lineno, "variable %s is not defined" % node.id)
+            error(node.lineno, "variable '%s' is not defined" % node.id)
         else:
             node.datatype = var_values['datatype']
 
@@ -508,7 +506,7 @@ class CheckProgramVisitor(NodeVisitor):
                     error(node.lineno, "Function '%s' takes exactly %d arguments %d given" \
                           % (node.id, sym['cant_argms'], len(node.params.expressions)))
             else:
-                error(node.lineno, "You can not call main function")
+                error(node.lineno, "You cannot call main function")
 
     def visit_ExprList(self, node):
         type_params = []

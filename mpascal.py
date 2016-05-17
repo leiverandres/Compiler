@@ -1,7 +1,8 @@
 from pasAST import *
+from pasparser import *
+import check
 import paslex
 import pasparser
-from pasparser import *
 import re
 import sys
 
@@ -15,7 +16,7 @@ Options:
 
 if __name__ == "__main__":
     import sys
-    from errors import subscribe_errors, errors_reported
+    from errors import subscribe_errors, errors_reported, clear_errors
 
     if (len(sys.argv) < 2 or len(sys.argv) > 3):
         show_usage(sys.argv[0])
@@ -29,13 +30,18 @@ if __name__ == "__main__":
                 paslex.run_lexer(data)
             else:
                 parser = pasparser.make_parser()
+                clear_errors()
                 try:
                     with subscribe_errors(lambda msg: sys.stdout.write(msg+"\n")):
                         result = parser.parse(data)
+                        check.check_program(result);
                     errors = errors_reported();
                     if errors == 0:
                         if ("-ast" in sys.argv):
-                            dump_class_tree(result)
+                            # dump_class_tree(result)
+                            dot = DotVisitor()
+                            dot.generic_visit(result)
+                            print dot
                     else:
                         sys.stderr.write("Number of errors: %d" % errors)
                 except parseError as e:
