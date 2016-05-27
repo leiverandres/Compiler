@@ -1,19 +1,20 @@
 fun ifthenTest()
 begin
   if 5 > 4 then
-    print("Hola")
+    print("Hola");
+  return (0)
 end
 
 fun ifthenelseTest()
 begin
   if 5 > 4 then
-    print("Hola")
-  else
-    print(":)")
+  skip;
+  return (0)
 end
 
 fun main()
 begin
   ifthenTest();
-  ifthenelseTest()
+  ifthenelseTest();
+  return(0)
 end

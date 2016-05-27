@@ -483,15 +483,14 @@ class CheckProgramVisitor(NodeVisitor):
         #si no tiene tipo aun, es por que esta definida despues o es un llamado recursivo
         #entonces buscamos el tipo en los statements de la instancia
         sym = self.symtab_lookup(node.id)
-
-        if sym['datatype'] == None:
-            datatype = self.find_fun_type(sym['fun_instance'])
-            self.update_datatype(node.id, datatype)
-        sym = self.symtab_lookup(node.id) #update
-
         if not sym:
             error(node.lineno, "Function '%s' is not defined" % node.id)
         else:
+            if sym['datatype'] == None:
+                datatype = self.find_fun_type(sym['fun_instance'])
+                self.update_datatype(node.id, datatype)
+                sym = self.symtab_lookup(node.id) #update
+
             if not node.id == 'main':
                 node.datatype = sym['datatype']
                 if sym['cant_argms'] == len(node.params.expressions):

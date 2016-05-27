@@ -249,6 +249,14 @@ def p_ifthenelse(p):
     "ifthenelse : IF relation THEN statement ELSE statement"
     p[0] = IfStatement(p[2], p[4], p[6], lineno=p.lineno(1))
 
+def p_ifblock1(p):
+    'ifthenblock : SKIP'
+    p[0] = p[1]
+
+def p_ifblock2(p):
+    'ifthenblock : beginEndBlock'
+    p[0] = p[1]
+
 def p_error_ifthen(p):
     "ifthen : IF relation statement"
     p[0] = IfStatement(p[2], p[3], None, lineno=p.lineno(1))
@@ -258,6 +266,7 @@ def p_error_ifthen2(p):
     "ifthenelse : IF relation error statement ELSE statement"
     p[0] = IfStatement(p[2], p[4], p[6], lineno=p.lineno(1))
     error(p[2].lineno, red+"Warning: 'Then' missing before statement")
+
 
 def p_functionCall(p):
     "functionCall : ID '(' paramslistop ')' %prec UMINUS"
@@ -449,7 +458,5 @@ if __name__ == "__main__":
 '''
 NOTAS:
 
-2. # errores: warning / fatal
-Preguntas:
-Como asignar el datatype, un string o una instancia de type----
+*  Como hacer que un if then statement no tenga solo una instrucción, sin begin y end
 '''
