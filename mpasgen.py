@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 import pasAST
+import StringIO
+data = StringIO.StringIO()
+label_index = 1
 
 def generate(file, root_ast):
     print >>file, "! Creado por mpasca.py"
     print >>file, "! Leiver Andres Campeón, Juan Pablo Florez, IS744 (2016‐1)"
+    print >>file, '\n     .section  ".text"'
+    print >>data, '\n     .section  ".rodata"'
     emit_program(file, root_ast)
+    print >>file, data.getvalue()
 
 def emit_program(file, program):
     print >>file, "\n! program"
@@ -14,6 +20,8 @@ def emit_program(file, program):
 
 def emit_function(file, func):
     print >>file, "\n! function: %s (start)" % func.id
+    print >>file, "\n       .global %s" % func.id
+    print >>file, "%s:" % func.id
     statements = func.statements.statements
     for stm in statements:
         emit_statement(file, stm)
@@ -44,40 +52,50 @@ def emit_statement(file, stm):
         emit_block(file, stm)
 
 def emit_while(file, while_stm):
+    test = new_label()
+    done = new_label()
     print >>file, "\n! while (start)"
-    print >>file, "! test:"
+    print >>file, "\n%s:\n" % test
 
     condition = while_stm.condition
     body = while_stm.body
 
     eval_relation(file, condition)
     print >>file, "!   relop := pop"
-    print >>file, "!   if not relop: goto done"
+    print >>file, "!   if not relop: goto %s" % done
     if not isinstance(body, pasAST.Skip):
         emit_block(file, while_stm.body);
     else:
         emit_skip(file, body)
-    print >>file, "! goto test"
-    print >>file, "! done:"
+    print >>file, "! goto %s" % test
+    print >>file, "\n%s:" % done
     print >>file, "\n! while (end)"
 
 def emit_ifthen(file, ifthen_stm):
+    done = new_label()
+    else_label = new_label() if ifthen_stm.else_b else None
     print >>file, "\n! ifthen (start)"
+
     eval_relation(file, ifthen_stm.condition)
-    print >>file, "! if not relop: goto else"
+    if else_label == None:
+        print >>file, "! if not relop: goto %s  ! done" % done
+    else:
+        print >>file, "! if not relop: goto %s  ! else" % else_label
+
     if not isinstance(ifthen_stm.then_b, pasAST.Skip):
         emit_block(file, ifthen_stm.then_b)
     else:
         emit_skip(file, ifthen_stm.then_b)
-    print >>file, "! goto next"
-    print >>file, "! else:"
+
+    print >>file, "! goto %s    ! goto end" % done
     if ifthen_stm.else_b:
+        print >>file, "%s:    ! else:" % else_label
         if not isinstance(ifthen_stm.then_b, pasAST.Skip):
             emit_block(file, ifthen_stm.then_b)
         else:
             emit_skip(file, ifthen_stm.then_b)
 
-    print >>file, "\n! next:"
+    print >>file, "\n%s:  ! done:" % done
     print >>file, "\n! ifthen (end)"
 
 def emit_assing(file, assign_stm):
@@ -92,6 +110,9 @@ def emit_assing(file, assign_stm):
 
 def emit_print(file, print_stm):
     print >>file, "\n! print (start)"
+    value = print_stm.str
+    label = new_label()
+    print >>data, '%s:   .asciz  "%s"' % (label, value)
     print >>file, "! print (end)"
 
 def emit_write(file, write_stm):
@@ -116,12 +137,13 @@ def emit_funcall(file, funcall_stm):
     i = 1
     push = "!   push %s(" % funcall_stm.id
     if isinstance(params, pasAST.ExprList):
-        for parm in params.expressions:
-            eval_expr(file, parm)
-            print >>file, "!   arg%d := pop" % i
-            push += ", " if i > 1 else ""
-            push += "arg" + str(i)
-            i += 1
+        if not isinstance(params.expressions[0], pasAST.Empty):
+            for parm in params.expressions:
+                eval_expr(file, parm)
+                print >>file, "!   arg%d := pop" % i
+                push += ", " if i > 1 else ""
+                push += "arg" + str(i)
+                i += 1
     push += ")"
     print >>file, push
 
@@ -194,6 +216,12 @@ def eval_expr(file, expr):
         print "Casting no implemented"
     elif isinstance(expr, pasAST.FunCall):
         emit_funcall(file, expr)
+
+def new_label():
+    global label_index
+    label = ".L" + str(label_index)
+    label_index += 1
+    return label
 
 '''
 LocationVector y LocationVectorAsign?
