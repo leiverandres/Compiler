@@ -502,8 +502,12 @@ class CheckProgramVisitor(NodeVisitor):
                             error(node.lineno, "Arguments must have same type")
                             break
                 else:
-                    error(node.lineno, "Function '%s' takes exactly %d arguments %d given" \
-                          % (node.id, sym['cant_argms'], len(node.params.expressions)))
+                    if sym['type_argms'][0] == None:
+                        error(node.lineno, "Function '%s' takes no arguments %d given" \
+                              % (node.id, len(node.params.expressions)))
+                    else:
+                        error(node.lineno, "Function '%s' takes exactly %d arguments %d given" \
+                              % (node.id, sym['cant_argms'], len(node.params.expressions)))
             else:
                 error(node.lineno, "You cannot call main function")
 
