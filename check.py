@@ -1,4 +1,4 @@
-# mpascheck.py
+# check.py
 # -*- coding: utf-8 -*-
 '''
 Proyecto 3 : Chequeo del Programa
@@ -313,6 +313,7 @@ class CheckProgramVisitor(NodeVisitor):
                 old_function = self.current_function
                 self.visit(local)
                 self.current_function = old_function
+                self.has_return = False # to avoid conflic between global and local function return
             else:
                 self.visit(local)
 
@@ -560,7 +561,6 @@ def main():
     parser = pasparser.make_parser()
     with subscribe_errors(lambda msg: sys.stdout.write(msg+"\n")):
         program = parser.parse(open(sys.argv[1]).read())
-        # Revisa el programa
         check_program(program)
 
 if __name__ == '__main__':

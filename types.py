@@ -34,7 +34,7 @@ class MpasType(object):
     '''
     def __init__(self, name, bin_ops=set(), un_ops=set()):
         '''
-        Deber� ser implementada por usted y averiguar que almacenar
+        Debera ser implementada por usted y averiguar que almacenar
         '''
         self.name = name
         self.bin_ops = bin_ops
@@ -50,13 +50,11 @@ class MpasType(object):
 # 	)
 
 int_type = MpasType("int",
-    set(('+', '-', '*', '/',
-         '<=', '<', '==', '!=', '>', '>=')),
+    set(('+', '-', '*', '/','<=', '<', '==', '!=', '>', '>=')),
     set(('+', '-')),
     )
 float_type = MpasType("float",
-    set(('+', '-', '*', '/',
-         '<=', '<', '==', '!=', '>', '>=')),
+    set(('+', '-', '*', '/', '<=', '<', '==', '!=', '>', '>=')),
     set(('+', '-')),
     )
 string_type = MpasType("string",
@@ -67,7 +65,3 @@ boolean_type = MpasType("bool",
     set(('and', 'or', '==', '!=')),
     set(('not',))
     )
-
-# En el código de verificación, deberá hacer referencia a los
-# objetos de tipos de arriba.  Piense en como va a querer tener
-# acceso a ellos.
