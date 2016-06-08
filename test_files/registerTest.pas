@@ -1,9 +1,8 @@
 fun main()
 i: int;
-j: int[12];
+j: int;
 begin
-  read(j[1]);
-  j[1] := 2+3*4-9;
+  j := 2+3*4-9;
   i := 1+(2+(3+(4+(5+(6+(7+(8+(9+10))))))));
-  return (i)
+  return (0)
 end

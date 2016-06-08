@@ -437,13 +437,16 @@ class CheckProgramVisitor(NodeVisitor):
         if not var_values:
             error(node.lineno, "Assigment invalid, variable '%s' is not defined" % node.id)
         else:
-            node.datatype = var_values['datatype']
-            self.visit(node.index)
-            if isinstance(node.index, Literal) and node.index.datatype == int_type:
-                if not (node.index.value >= 0 and node.index.value < var_values['size']):
-                    error(node.lineno, "Vector index out of range")
+            if var_values['varClass'] == 'vector':
+                node.datatype = var_values['datatype']
+                self.visit(node.index)
+                if isinstance(node.index, Literal) and node.index.datatype == int_type:
+                    if not (node.index.value >= 0 and node.index.value < var_values['size']):
+                        error(node.lineno, "Vector index out of range")
+                else:
+                    error(node.lineno, "Index of vector '%s' must be INTEGER" % node.id)
             else:
-                error(node.lineno, "Index of vector '%s' must be INTEGER" % node.id)
+                error(node.lineno, "Variable is not defined as a vector.")
 
     def visit_LocationVector(self, node):
         # 1. Revisar que la localización cargada es válida.

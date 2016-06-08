@@ -8,75 +8,38 @@ import sys
 ##########################################################
 class Register(object):
     def __init__(self):
-        self.local_count = 0 # next local register for stack
-        self.tmp_count = 0 # registros "derramados" en memoria
+        self.unused_stack = [7, 6, 5, 4, 3, 2, 1, 0]
+        self.in_use_stack = []
+        self.in_memory = 0
         self.sp_count = 64
-        self.oldest = 0
-        self.stack = [False for i in xrange(0,8)]
-        # l_cont = 0
-        # t_cont = 0
-
-    def getFree(self):
-        return self.stack.index(False)
 
     def push(self, file):
-        # print "Stack: ", self.stack
-        if False in self.stack:
-            # self.local_count +=1
-            self.local_count = self.getFree()
-            local_reg = "%l" + str(self.local_count)
-            self.stack[self.local_count] = True
-            print "last free used: ", self.local_count
+        if self.unused_stack:
+            reg = self.unused_stack.pop()
+            self.in_use_stack.append(reg)
+            local_reg = '%l' + str(reg)
         else:
-            # derramar registro mas viejo en memoria
-            self.stack[self.oldest] = False
-            print >> file, "     st %s, [%%fp - %d]  ! spill %s" % (self.oldest, self.sp_count, self.oldest)
-            self.oldest = (self.oldest + 1) % 8
-            self.sp_count +=4
-            self.tmp_count += 1
-            # try push again:
-            local_reg = self.push(file)
-            # self.local_count = self.getFree()
-            # local_reg = '%l'+str(self.local_count)
-            # self.stack[self.local_count] = True
-        print "push state(local, tmp, sp): (%d, %d, %d)" % (self.local_count, self.tmp_count, self.sp_count)
+            reg = self.in_use_stack.pop(0) # oldest
+            local_reg = '%l' + str(reg)
+            print >>file, "     st %s, [%%fp - %d]" % (local_reg, self.sp_count)
+            self.in_use_stack.append(reg)
+            self.in_memory += 1
+            self.sp_count += 4
         return local_reg
-        if self.local_count < 8 and self.tmp_count != 8:
-            l = '%l'+str(self.local_count)
-            self.local_count +=1
-        else:
-            if self.local_count == 8:
-                self.local_count = 0
-                self.tmp_count = 8
-            l = '%l'+str(self.local_count)
-            print >> file, "     st %s, [%%fp -%d]" % (l, self.sp_count)
-            self.sp_count +=4
-            self.local_count +=1
-        return l
 
-    def pop(self, file): # falta: cuando hacer recovery?
-        # local_reg = "None"
-        # print "pop state(local, tmp, sp): (%d, %d, %d)" % (self.local_count, self.tmp_count, self.sp_count)
-        # if True in self.stack:
-        #     local_reg = '%l'+str(self.local_count)
-        #     self.stack[self.local_count] = False
-        #     self.local_count = ((self.local_count - 1) % 8 + 8 ) % 8 # aritmetica modular
-        # if self.stack.count(False) > 0 and self.tmp_count > 0:
-        #     self.tmp_count -= 1
-        #     self.local_count = self.getFree()
-        #     print >>file, "     ld [%%fp - %d], %s" % (self.sp_count, self.local_count)
-        #     self.stack[self.local_count] = True
-        #     self.sp_count -= 4
-        # return local_reg
-        if self.local_count >= 0 and self.tmp_count == 0:
-            self.local_count -=1
-            l = '%l'+str(self.local_count)
-        else:
-            self.local_count = self.tmp_count
-            self.tmp_count = 0
-            self.local_count -=1
-            l = '%l'+str(self.local_count)
-        return l
+    def pop(self, file):
+        if self.in_memory > 0 and not self.in_use_stack:
+            reg = self.unused_stack.pop(0)
+            self.unused_stack.append(reg)
+            local_reg = '%l' + str(reg)
+            print >>file, "     ld [%%fp - %d], %s" % (self.sp_count, local_reg)
+            self.in_memory -= 1
+            self.sp_count -= 4
+        elif self.in_use_stack:
+            reg = self.in_use_stack.pop()
+            local_reg = '%l' + str(reg)
+            self.unused_stack.append(reg)
+        return local_reg
 
 ##########################################################
 # Register
@@ -225,8 +188,7 @@ def emit_assign(file, assign_stm):
     eval_expr(file, assign_stm.value)
     result = reg.pop(file)
     loc = assign_stm.location
-    print "last: ",  loc.id
-    offset = -find_offset(loc) #falta: offset es positivo? negativo
+    offset = -find_offset(loc)
     if isinstance(loc, pasAST.LocationId):
         print >>file, "     st %s, [%%fp - %d]" % (result, offset)
         print >>file, "!   %s := pop" % loc.id
@@ -286,8 +248,8 @@ def emit_read(file, read_stm):
         print find_offset(read_stm.location)
     else: # LocationVectorAsign
         print find_offset(read_stm.location)
-    # falta: result = reg.pop()?
-    print >>file, "     st %%o0, result" # falta: dir result, %fp + offset?
+    result = reg.push(file)
+    print >>file, "     st %%o0, result"
     print >>file, "! read (end)"
 
 def emit_return(file, return_stm, ret_label):
@@ -415,13 +377,11 @@ def eval_expr(file, expr):
         elif (expr.op == '-'):
             print >>file, "     sub %s, %s, %s" % (memdir_left, memdir_right, memdir_ans)
         elif (expr.op == '*'):
-            memdir_ans = reg.push(file)
             print >>file, "     mov %s, %%o0" % memdir_left
             print >>file, "     call .mul"
             print >>file, "     mov %s, %%o1" % memdir_right
             print >>file, "     mov %%o0 , %s" % memdir_ans
         elif (expr.op == '/'):
-            memdir_ans = reg.push(file)
             print >>file, "     mov %s, %%o0" % memdir_left
             print >>file, "     call .div"
             print >>file, "     mov %s, %%o1" % memdir_right
@@ -433,7 +393,7 @@ def eval_expr(file, expr):
         if expr.op == '-': # minus unary
             print >>file, "     xor %s, 1, %s" % (li, lk)
     elif isinstance(expr, pasAST.LocationId):
-        offset = -find_offset(expr) # falta: signo offset?
+        offset = -find_offset(expr)
         ln = reg.push(file)
         print >>file, "     ld [%%fp - %d], %s" % (offset, ln)
         print >>file, "!   push", expr.id
