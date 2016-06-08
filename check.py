@@ -111,12 +111,12 @@ class MpasType(object):
 int_type = MpasType("int",
     set(('+', '-', '*', '/',
          '<=', '<', '==', '!=', '>', '>=')),
-    set(('+', '-')),
+    set(('+', '-'))
     )
 float_type = MpasType("float",
     set(('+', '-', '*', '/',
          '<=', '<', '==', '!=', '>', '>=')),
-    set(('+', '-')),
+    set(('+', '-'))
     )
 string_type = MpasType("string",
     set(('+',)),
@@ -440,7 +440,7 @@ class CheckProgramVisitor(NodeVisitor):
             node.datatype = var_values['datatype']
             self.visit(node.index)
             if isinstance(node.index, Literal) and node.index.datatype == int_type:
-                if not (node.index.value >= 0 and node.index.value <= var_values['size']):
+                if not (node.index.value >= 0 and node.index.value < var_values['size']):
                     error(node.lineno, "Vector index out of range")
             else:
                 error(node.lineno, "Index of vector '%s' must be INTEGER" % node.id)

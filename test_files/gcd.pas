@@ -1,23 +1,18 @@
-fun foo()
-begin
-  return (0)
-end
-
 fun main()
 x: int;
 y: int;
 g: int;
-a: int;
-i: int;
+a: float[12];
 begin
   read(x);
   read(y);
+  read(a[0]);
   g := y;
+  a[0] := 0.0;
   while x > 0 do
   begin
     g := x;
     x := y - (y/x)*x;
-    x := foo() + 2;
     y := g
   end;
   write(g);
