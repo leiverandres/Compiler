@@ -2,7 +2,7 @@
 
 Implementacion de un compilador para lenguaje minipascal
 
-Desarroladores:
+Desarrolladores:
 
 * Leiver Andres Campeón
 * Juan Pablo Florez
@@ -14,24 +14,24 @@ analizador lexico y el sintáctico. Para construir el arbol de sintaxis abstract
 
 En resumen:
 El archivo paslex.py contruye el analizador lexico. puede ejecutarse este paso con el comando.
-'''python
+```python
 python paslex.py <file_name.pas>
-'''
+```
 
 El archivo pasAST.py contiene la definicion de las clases de nodos del AST y la definición del nodeVisitor.
 El archivo pasparser.py realiza el analisis sintactico y construye el AST.
-'''python
+```python
 python pasparser.py <file_name.pas>
-'''
+```
 El archivo check.py se encarga del analisis semantico, el cual valida los tipos de las variables y operaciones.
-'''python
+```python
 python check.py <file_name.pas>
-'''
+```
 El archivo mpasgen.py genera el código maquina para ser ejecutado en la arquitectura SPARC V8.
 Finalmente el archivo mpascal.py permite ejecutar el compilador completo y asegurarse de que no hayan errores en archivo.pas. Además provee dos opciones: una para ejecutar solamente el analizador lexico(-lex) y la otra para compilar y mostrar por consola el AST(-ast).
-'''python
+```python
 python mpascal.py [-lex | -ast]  <file_name.pas>
-'''
+```
 
 
 
